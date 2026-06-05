@@ -5,6 +5,15 @@ import axios from "axios";
 function TeacherClasses() {
   const [classes, setClasses] = useState([]);
   const navigate = useNavigate();
+const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const goTo = (path) => {
+    setSidebarOpen(false);
+    navigate(path);
+  };
+
+
+
 
   useEffect(() => {
     const role = localStorage.getItem("role");
@@ -23,6 +32,35 @@ function TeacherClasses() {
   }, [navigate]);
 
   return (
+<div className="dashboard-layout">
+      <button className="menu-toggle" onClick={() => setSidebarOpen(true)}>
+        Menu
+      </button>
+
+      {sidebarOpen && (
+        <div
+          className="sidebar-overlay"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+        <h2>SmartSchool</h2>
+
+        <button onClick={() => goTo("/teacher")}>Dashboard</button>
+        <button onClick={() => goTo("/teacher-classes")}>My Classes</button>
+
+        <button
+          className="logout-btn"
+          onClick={() => {
+            localStorage.clear();
+            navigate("/", { replace: true });
+          }}
+        >
+          Logout
+        </button>
+      </aside>
+
     <div>
       <h1>My Classes</h1>
 
@@ -69,6 +107,7 @@ function TeacherClasses() {
           </div>
         ))
       )}
+    </div>
     </div>
   );
 }
