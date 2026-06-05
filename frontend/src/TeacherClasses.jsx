@@ -61,7 +61,7 @@ const [sidebarOpen, setSidebarOpen] = useState(false);
         </button>
       </aside>
 
-    
+    <div>
       <h1>My Classes</h1>
 
       <button onClick={() => navigate("/teacher")}>Back</button>
@@ -107,6 +107,7 @@ const [sidebarOpen, setSidebarOpen] = useState(false);
           </div>
         ))
       )}
+    </div>
     </div>
   );
 }
