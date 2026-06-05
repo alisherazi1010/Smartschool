@@ -16,7 +16,7 @@ function ViewTeachers() {
     }
 
     axios
-      .get("http://localhost:5000/teachers")
+      .get(`${import.meta.env.VITE_API_URL}/teachers`)
       .then((res) => setTeachers(res.data))
       .catch((err) => console.log(err));
   }, [navigate]);
@@ -27,7 +27,7 @@ function ViewTeachers() {
     }
 
     try {
-      const res = await axios.delete(`http://localhost:5000/teachers/${id}`);
+      const res = await axios.delete(`${import.meta.env.VITE_API_URL}/teachers/${id}`);
       alert(res.data.message);
 
       setTeachers(teachers.filter((t) => t.teacher_id !== id));

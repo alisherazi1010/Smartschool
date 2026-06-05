@@ -8,7 +8,7 @@ function ViewSubjects() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/subjects")
+      .get(`${import.meta.env.VITE_API_URL}/subjects`)
       .then((res) => setSubjects(res.data))
       .catch((err) => console.log(err));
   }, []);

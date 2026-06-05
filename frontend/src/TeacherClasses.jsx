@@ -17,7 +17,7 @@ function TeacherClasses() {
     }
 
     axios
-      .get(`http://localhost:5000/teacher-classes/${userId}`)
+      .get(`${import.meta.env.VITE_API_URL}/teacher-classes/${userId}`)
       .then((res) => setClasses(res.data))
       .catch((err) => console.log(err));
   }, [navigate]);

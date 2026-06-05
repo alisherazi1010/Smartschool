@@ -12,7 +12,7 @@ function ViewAssessmentResult() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/assessment-results/${assessment.assessment_id}`)
+      .get(`${import.meta.env.VITE_API_URL}/assessment-results/${assessment.assessment_id}`)
       .then((res) => setResults(res.data))
       .catch((err) => console.log(err));
   }, [assessment]);

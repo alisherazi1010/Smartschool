@@ -20,7 +20,7 @@ const [searchSection, setSearchSection] = useState("");
     }
 
     axios
-      .get("http://localhost:5000/students")
+      .get(`${import.meta.env.VITE_API_URL}/students`)
       .then((res) => setStudents(res.data))
       .catch((err) => console.log(err));
   }, [navigate]);
@@ -31,7 +31,7 @@ const [searchSection, setSearchSection] = useState("");
     }
 
     try {
-      const res = await axios.delete(`http://localhost:5000/students/${id}`);
+      const res = await axios.delete(`${import.meta.env.VITE_API_URL}/students/${id}`);
       alert(res.data.message);
 
       setStudents(students.filter((s) => s.student_id !== id));

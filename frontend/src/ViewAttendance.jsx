@@ -24,7 +24,7 @@ function ViewAttendance() {
   const loadAttendance = () => {
     axios
       .get(
-        `http://localhost:5000/attendance-month/${classInfo.assignment_id}/${year}/${month}`
+        `${import.meta.env.VITE_API_URL}/attendance-month/${classInfo.assignment_id}/${year}/${month}`
       )
       .then((res) => {
         const grouped = {};
@@ -62,7 +62,7 @@ function ViewAttendance() {
     ).padStart(2, "0")}`;
 
     try {
-      await axios.put("http://localhost:5000/attendance-cell", {
+      await axios.put(`${import.meta.env.VITE_API_URL}/attendance-cell`, {
         student_id: studentId,
         assignment_id: classInfo.assignment_id,
         attendance_date: attendanceDate,

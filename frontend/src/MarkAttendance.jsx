@@ -14,7 +14,7 @@ function MarkAttendance() {
   useEffect(() => {
     axios
       .get(
-        `http://localhost:5000/students-by-class-section/${classInfo.class_id}/${classInfo.section_id}`
+        `${import.meta.env.VITE_API_URL}/students-by-class-section/${classInfo.class_id}/${classInfo.section_id}`
       )
       .then((res) => {
         setStudents(res.data);
@@ -43,7 +43,7 @@ function MarkAttendance() {
   }
 
   try {
-    const res = await axios.post("http://localhost:5000/attendance", {
+    const res = await axios.post(`${import.meta.env.VITE_API_URL}/attendance`, {
       assignment_id: classInfo.assignment_id,
       attendance_date: attendanceDate,
       attendance,

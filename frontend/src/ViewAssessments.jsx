@@ -11,7 +11,7 @@ function ViewAssessments() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/assessments/${classInfo.assignment_id}`)
+      .get(`${import.meta.env.VITE_API_URL}/assessments/${classInfo.assignment_id}`)
       .then((res) => setAssessments(res.data))
       .catch((err) => console.log(err));
   }, [classInfo]);
@@ -23,7 +23,7 @@ const handleDelete = async (id) => {
   }
 
   try {
-    const res = await axios.delete(`http://localhost:5000/assessments/${id}`);
+    const res = await axios.delete(`${import.meta.env.VITE_API_URL}/assessments/${id}`);
     alert(res.data.message);
 
     setAssessments(assessments.filter((a) => a.assessment_id !== id));

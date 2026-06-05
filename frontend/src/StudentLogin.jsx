@@ -21,7 +21,7 @@ function StudentLogin() {
   return;
 }
     try {
-      const res = await axios.post("http://localhost:5000/student-login", {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/student-login`, {
         admission_no: admissionNo,
         password,
       });

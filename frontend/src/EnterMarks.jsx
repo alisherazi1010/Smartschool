@@ -14,13 +14,13 @@ function EnterMarks() {
  useEffect(() => {
   axios
     .get(
-      `http://localhost:5000/students-by-class-section/${classInfo.class_id}/${classInfo.section_id}`
+      `${import.meta.env.VITE_API_URL}/students-by-class-section/${classInfo.class_id}/${classInfo.section_id}`
     )
     .then((res) => {
       setStudents(res.data);
 
       axios
-        .get(`http://localhost:5000/student-marks/${assessment.assessment_id}`)
+        .get(`${import.meta.env.VITE_API_URL}/student-marks/${assessment.assessment_id}`)
         .then((marksRes) => {
           const savedMarks = {};
 
@@ -48,7 +48,7 @@ function EnterMarks() {
 
   const handleSubmit = async () => {
     try {
-      const res = await axios.post("http://localhost:5000/student-marks", {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/student-marks`, {
         assessment_id: assessment.assessment_id,
         marks,
       });

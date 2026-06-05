@@ -14,10 +14,10 @@ const navigate = useNavigate();
   });
 
   useEffect(() => {
-    axios.get("http://localhost:5000/teachers")
+    axios.get(`${import.meta.env.VITE_API_URL}/teachers`)
       .then(res => setTeachers(res.data));
 
-    axios.get("http://localhost:5000/subjects")
+    axios.get(`${import.meta.env.VITE_API_URL}/subjects`)
       .then(res => setSubjects(res.data));
   }, []);
 
@@ -31,7 +31,7 @@ const navigate = useNavigate();
   const handleSubmit = async () => {
     try {
       const res = await axios.post(
-        "http://localhost:5000/teacher-assignments",
+        `${import.meta.env.VITE_API_URL}/teacher-assignments`,
         assignment
       );
 

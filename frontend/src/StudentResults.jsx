@@ -17,7 +17,7 @@ function StudentResults() {
     }
 
     axios
-      .get(`http://localhost:5000/student-results/${studentId}`)
+      .get(`${import.meta.env.VITE_API_URL}/student-results/${studentId}`)
       .then((res) => setResults(res.data))
       .catch((err) => console.log(err));
   }, [navigate]);

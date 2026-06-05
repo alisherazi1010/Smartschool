@@ -13,12 +13,12 @@ function AdminStudentProfile() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/student-attendance/${student.student_id}`)
+      .get(`${import.meta.env.VITE_API_URL}/student-attendance/${student.student_id}`)
       .then((res) => setAttendance(res.data))
       .catch((err) => console.log(err));
 
     axios
-      .get(`http://localhost:5000/student-results/${student.student_id}`)
+      .get(`${import.meta.env.VITE_API_URL}/student-results/${student.student_id}`)
       .then((res) => setResults(res.data))
       .catch((err) => console.log(err));
   }, [student.student_id]);

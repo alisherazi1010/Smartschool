@@ -33,7 +33,7 @@ function CreateAssessment() {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/assessments", {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/assessments`, {
         assignment_id: classInfo.assignment_id,
         ...assessment,
       });

@@ -18,7 +18,7 @@ function EditStudent() {
   const handleUpdate = async () => {
     try {
       const res = await axios.put(
-        `http://localhost:5000/students/${student.student_id}`,
+        `${import.meta.env.VITE_API_URL}/students/${student.student_id}`,
         student
       );
 

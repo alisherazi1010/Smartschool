@@ -17,7 +17,7 @@ function StudentAttendance() {
     }
 
     axios
-      .get(`http://localhost:5000/student-attendance/${studentId}`)
+      .get(`${import.meta.env.VITE_API_URL}/student-attendance/${studentId}`)
       .then((res) => setAttendance(res.data))
       .catch((err) => console.log(err));
   }, [navigate]);

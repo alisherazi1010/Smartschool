@@ -42,7 +42,7 @@ function AddTeacher() {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/teachers", teacher);
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/teachers`, teacher);
       alert(res.data.message);
 
       setTeacher({

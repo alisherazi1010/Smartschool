@@ -8,7 +8,7 @@ const navigate = useNavigate();
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/teacher-assignments")
+      .get(`${import.meta.env.VITE_API_URL}/teacher-assignments`)
       .then((res) => setAssignments(res.data))
       .catch((err) => console.log(err));
   }, []);

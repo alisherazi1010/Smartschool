@@ -23,7 +23,7 @@ function StudentReportCard() {
 
     try {
       const res = await axios.get(
-        `http://localhost:5000/report-card/${studentId}/${type}`
+        `${import.meta.env.VITE_API_URL}/report-card/${studentId}/${type}`
       );
 
       setRecords(res.data);

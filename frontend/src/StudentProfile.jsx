@@ -16,7 +16,7 @@ function StudentProfile() {
   }
 
   axios
-    .get(`http://localhost:5000/student-profile/${studentId}`)
+    .get(`${import.meta.env.VITE_API_URL}/student-profile/${studentId}`)
     .then((res) => setProfile(res.data))
     .catch((err) => console.log(err));
 }, [navigate]);

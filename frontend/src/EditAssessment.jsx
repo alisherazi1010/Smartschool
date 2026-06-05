@@ -25,7 +25,7 @@ function EditAssessment() {
   const handleUpdate = async () => {
     try {
       const res = await axios.put(
-        `http://localhost:5000/assessments/${assessment.assessment_id}`,
+        `${import.meta.env.VITE_API_URL}/assessments/${assessment.assessment_id}`,
         formData
       );
 
