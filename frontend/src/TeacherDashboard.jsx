@@ -6,9 +6,7 @@ function TeacherDashboard() {
 
   return (
     <div className="dashboard-layout">
-<button class="menu-toggle" id="menuToggle">☰ Menu</button>
       <aside className="sidebar">
-        
         <h2>SmartSchool</h2>
 
         <button onClick={() => navigate("/teacher")}>Dashboard</button>
