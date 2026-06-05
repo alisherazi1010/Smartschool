@@ -1,22 +1,40 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function TeacherDashboard() {
   const navigate = useNavigate();
   const name = localStorage.getItem("name");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const goTo = (path) => {
+    setSidebarOpen(false);
+    navigate(path);
+  };
 
   return (
     <div className="dashboard-layout">
-      <aside className="sidebar">
+      <button className="menu-toggle" onClick={() => setSidebarOpen(true)}>
+        Menu
+      </button>
+
+      {sidebarOpen && (
+        <div
+          className="sidebar-overlay"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <h2>SmartSchool</h2>
 
-        <button onClick={() => navigate("/teacher")}>Dashboard</button>
-        <button onClick={() => navigate("/teacher-classes")}>My Classes</button>
+        <button onClick={() => goTo("/teacher")}>Dashboard</button>
+        <button onClick={() => goTo("/teacher-classes")}>My Classes</button>
 
         <button
           className="logout-btn"
           onClick={() => {
             localStorage.clear();
-           navigate("/", { replace: true });
+            navigate("/", { replace: true });
           }}
         >
           Logout
