@@ -585,7 +585,7 @@ th {
 
 
 
-/*teacherdashboard*/
+/*teacherdashboard
 
 .clickable-card {
   cursor: pointer;
@@ -597,7 +597,7 @@ th {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
-
+*/
 
 
 
@@ -748,32 +748,168 @@ th {
 
 
 /*teacherclasses*/
+/* teacher classes */
+
+.dashboard-main {
+  background:
+    radial-gradient(circle at 20% 15%, rgba(147, 197, 253, 0.38), transparent 34%),
+    radial-gradient(circle at 85% 20%, rgba(254, 215, 170, 0.34), transparent 30%),
+    radial-gradient(circle at 65% 90%, rgba(203, 213, 225, 0.4), transparent 36%),
+    var(--dashboard-bg);
+}
+
 .class-card {
-  background: white;
-  padding: 22px;
-  margin: 16px 0;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  position: relative;
+  overflow: hidden;
+  padding: 26px;
+  margin: 22px 0;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.48);
+  box-shadow:
+    0 22px 55px rgba(15, 23, 42, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(18px);
+}
+
+.class-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 18% 10%, rgba(96, 165, 250, 0.24), transparent 34%),
+    radial-gradient(circle at 88% 24%, rgba(251, 146, 60, 0.18), transparent 28%);
+  pointer-events: none;
+}
+
+.class-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.class-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 26px;
 }
 
 .class-card h3 {
   margin: 0 0 8px;
-  color: #111827;
+  color: #1e293b;
+  font-size: 28px;
+  font-weight: 800;
 }
 
 .class-card p {
-  margin: 0 0 16px;
-  color: #64748b;
+  margin: 0;
+  color: #475569;
+  font-size: 18px;
+  font-weight: 500;
 }
 
-.class-card button {
-  margin: 6px 8px 6px 0;
+.class-badge {
+  flex: 0 0 auto;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 237, 213, 0.72);
+  color: #7c2d12;
+  font-weight: 800;
+  box-shadow: 0 12px 28px rgba(251, 146, 60, 0.2);
+}
+
+.class-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(110px, 1fr));
+  gap: 18px;
+}
+
+.class-actions button {
+  min-height: 132px;
+  margin: 0;
+  padding: 16px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.44);
+  color: #243b5a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.25;
+  box-shadow:
+    0 14px 30px rgba(15, 23, 42, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+}
+
+.class-actions button:hover {
+  background: #1e3a5f;
+  color: white;
+  transform: translateY(-4px);
+}
+
+.action-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.62);
+  color: #1e3a5f;
+  font-size: 25px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.class-actions button:hover .action-icon {
+  background: rgba(255, 255, 255, 0.18);
+  color: white;
+}
+
+@media (max-width: 1100px) {
+  .class-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 768px) {
-  .class-card button {
-    width: 100%;
-    margin: 6px 0;
+  .class-card {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .class-card-header {
+    flex-direction: column;
+  }
+
+  .class-card h3 {
+    font-size: 22px;
+  }
+
+  .class-card p {
+    font-size: 16px;
+  }
+
+  .class-actions {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .class-actions button {
+    min-height: 76px;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 14px;
+  }
+
+  .action-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
   }
 }

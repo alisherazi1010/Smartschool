@@ -73,37 +73,42 @@ const [sidebarOpen, setSidebarOpen] = useState(false);
       ) : (
         classes.map((c) => (
           <div key={c.assignment_id} className="class-card">
+            <div className="class-card-header">
+    <div>
             <h3>{c.class_name} - Section {c.section_name}</h3>
             <p>Subject: {c.subject_name}</p>
+            </div>
+             <span className="class-badge">Today</span>
+  </div>
 
+            <div className="class-actions">
             <button onClick={() => navigate("/mark-attendance", { state: { classInfo: c } })}>
+              <span className="action-icon">✓</span>
               Mark Attendance
             </button>
             <button
   onClick={() =>
-    navigate("/view-attendance", { state: { classInfo: c } })
-  }
->
+    navigate("/view-attendance", { state: { classInfo: c } })}>
+       <span className="action-icon">▦</span>
   View Attendance
 </button>
 
 
 <button
   onClick={() =>
-    navigate("/create-assessment", { state: { classInfo: c } })
-  }
->
+    navigate("/create-assessment", { state: { classInfo: c } })}>
+      <span className="action-icon">＋</span>
   Create Assessment
 </button>
 
 
 <button
   onClick={() =>
-    navigate("/view-assessments", { state: { classInfo: c } })
-  }
->
+    navigate("/view-assessments", { state: { classInfo: c } })}>
+  <span className="action-icon">□</span>
   View Assessments
 </button>
+          </div>
           </div>
         ))
       )}
