@@ -561,6 +561,35 @@ th {
 }
 
 @media (max-width: 480px) {
+  .menu-toggle {
+    top: 10px;
+    left: 10px;
+    min-height: 36px;
+    padding: 8px 11px;
+    font-size: 13px;
+  }
+
+  .sidebar {
+    width: min(86vw, 260px);
+    padding: 18px 12px;
+  }
+
+  .sidebar h2 {
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    font-size: 19px;
+  }
+
+  .sidebar button {
+    min-height: 40px;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .dashboard-main {
+    padding: 62px 12px 18px;
+  }
+
   .dashboard-main h1 {
     font-size: 24px;
   }
@@ -580,6 +609,176 @@ th {
 
   .login-brand-section h2 {
     font-size: 22px;
+  }
+}
+
+@media (max-width: 420px) {
+  .admin-hero,
+  .teacher-hero,
+  .student-hero {
+    padding: 18px;
+    margin-bottom: 16px;
+    border-radius: 14px;
+  }
+
+  .admin-hero h1,
+  .teacher-hero h1,
+  .student-hero h1 {
+    font-size: 22px;
+  }
+
+  .admin-hero p,
+  .teacher-hero p,
+  .student-hero p {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .admin-hero-badge,
+  .teacher-hero-badge,
+  .class-badge {
+    padding: 8px 10px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+
+  .hero-actions {
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .hero-actions button {
+    min-height: 36px;
+    padding: 8px 10px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+
+  .admin-list-panel,
+  .admin-table-panel {
+    padding: 14px;
+    margin: 14px 0;
+    border-radius: 14px;
+  }
+
+  .admin-section-header h2,
+  .teacher-section-header h2 {
+    font-size: 20px;
+  }
+
+  .admin-section-header p,
+  .teacher-section-header p {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .admin-filter-grid {
+    gap: 10px;
+  }
+
+  .admin-filter-grid input,
+  .assignment-select {
+    height: 38px;
+    padding: 8px 10px;
+    border-radius: 9px;
+    font-size: 13px;
+  }
+
+  .admin-stat-card,
+  .teacher-dashboard-card,
+  .glass-student-card,
+  .class-card {
+    min-height: 96px;
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .admin-stat-icon,
+  .teacher-card-icon,
+  .student-card-icon,
+  .action-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 15px;
+  }
+
+  .admin-stat-card h3 {
+    font-size: 24px;
+  }
+
+  .teacher-dashboard-card h3,
+  .glass-student-card h2,
+  .class-card h3 {
+    font-size: 17px;
+  }
+
+  .teacher-dashboard-card p,
+  .glass-student-card p,
+  .class-card p {
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .admin-action-grid button,
+  .teacher-action-row button,
+  .class-actions button {
+    min-height: 62px;
+    padding: 10px;
+    border-radius: 14px;
+    font-size: 13px;
+  }
+
+  .admin-action-icon,
+  .teacher-action-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 15px;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .table-actions button {
+    min-height: 32px;
+    padding: 7px 9px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 360px) {
+  .dashboard-main {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .admin-hero,
+  .teacher-hero,
+  .student-hero,
+  .admin-list-panel,
+  .admin-table-panel,
+  .class-card {
+    padding: 12px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero-actions button,
+  .hero-actions .admin-hero-badge {
+    width: 100%;
+    text-align: center;
+  }
+
+  .admin-stat-card,
+  .teacher-dashboard-card,
+  .glass-student-card {
+    column-gap: 10px;
   }
 }
 
