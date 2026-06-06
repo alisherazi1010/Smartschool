@@ -459,7 +459,7 @@ th {
   position: fixed;
   top: 14px;
   left: 14px;
-  z-index: 1200;
+  z-index: 800;
   min-height: 42px;
   margin: 0;
   padding: 10px 14px;
