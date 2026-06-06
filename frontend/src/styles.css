@@ -1272,6 +1272,12 @@ th {
   color: white;
 }
 
+.empty-panel-text {
+  margin: 0;
+  color: #64748b;
+  font-weight: 700;
+}
+
 @media (max-width: 768px) {
   .admin-hero {
     flex-direction: column;
@@ -1792,6 +1798,27 @@ th {
   background: rgba(255, 255, 255, 0.2);
   padding: 6px 12px;
   border-radius: 20px;
+}
+
+.admin-profile-header {
+  background: rgba(255, 255, 255, 0.48);
+  color: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 22px 55px rgba(15, 23, 42, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(18px);
+}
+
+.admin-profile-header .profile-avatar {
+  background: rgba(255, 255, 255, 0.72);
+  color: #1e3a5f;
+}
+
+.admin-profile-header span {
+  background: rgba(255, 237, 213, 0.72);
+  color: #7c2d12;
+  font-weight: 800;
 }
 
 .profile-info-grid {
