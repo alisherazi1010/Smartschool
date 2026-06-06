@@ -114,6 +114,10 @@ function AdminDashboard() {
             <span className="admin-action-icon">GO</span>
             <span>Assign Teacher</span>
           </button>
+          <button onClick={() => navigate("/manage-assignments")}>
+            <span className="admin-action-icon">ED</span>
+            <span>Manage Assignments</span>
+          </button>
         </div>
       </main>
     </div>

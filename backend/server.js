@@ -383,6 +383,10 @@ app.get("/teacher-assignments", (req, res) => {
   const query = `
     SELECT 
       teacher_assignments.assignment_id,
+      teacher_assignments.teacher_id,
+      teacher_assignments.class_id,
+      teacher_assignments.section_id,
+      teacher_assignments.subject_id,
       users.name AS teacher_name,
       classes.class_name,
       sections.section_name,
@@ -399,6 +403,34 @@ app.get("/teacher-assignments", (req, res) => {
     if (err) return res.status(500).json(err);
     res.json(result);
   });
+});
+
+app.put("/teacher-assignments/:id", (req, res) => {
+  const assignmentId = req.params.id;
+  const { teacher_id, class_id, section_id, subject_id } = req.body;
+
+  const query = `
+    UPDATE teacher_assignments
+    SET teacher_id = ?,
+        class_id = ?,
+        section_id = ?,
+        subject_id = ?
+    WHERE assignment_id = ?
+  `;
+
+  db.query(
+    query,
+    [teacher_id, class_id, section_id, subject_id, assignmentId],
+    (err, result) => {
+      if (err) return res.status(500).json(err);
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "Assignment not found" });
+      }
+
+      res.json({ message: "Assignment updated successfully" });
+    }
+  );
 });
 
 

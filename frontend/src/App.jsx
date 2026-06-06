@@ -14,6 +14,7 @@ import AddSubject from "./AddSubject";
 import ViewSubjects from "./ViewSubjects";
 import AssignTeacher from "./AssignTeacher";
 import ViewAssignments from "./ViewAssignments";
+import ManageAssignments from "./ManageAssignments";
 import TeacherClasses from "./TeacherClasses";
 import MarkAttendance from "./MarkAttendance";
 import ViewAttendance from "./ViewAttendance";
@@ -48,6 +49,7 @@ function App() {
         <Route path="/view-subjects" element={<ViewSubjects />} />
         <Route path="/assign-teacher" element={<AssignTeacher />} />
         <Route path="/view-assignments" element={<ViewAssignments />} />
+        <Route path="/manage-assignments" element={<ManageAssignments />} />
         <Route path="/teacher-classes" element={<TeacherClasses />} />
         <Route path="/mark-attendance" element={<MarkAttendance />} />
         <Route path="/view-attendance" element={<ViewAttendance />} />

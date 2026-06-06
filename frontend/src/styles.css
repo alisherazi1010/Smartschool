@@ -851,6 +851,10 @@ th {
   min-width: 520px;
 }
 
+.manage-assignment-table {
+  min-width: 900px;
+}
+
 .admin-table th,
 .admin-table td {
   padding: 14px;
@@ -875,6 +879,23 @@ th {
 
 .admin-table tbody tr:hover td {
   background: rgba(239, 246, 255, 0.72);
+}
+
+.assignment-select {
+  width: 100%;
+  min-width: 150px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid rgba(203, 213, 225, 0.9);
+  background: rgba(255, 255, 255, 0.76);
+  color: #1e293b;
+  font-weight: 700;
+  outline: none;
+}
+
+.assignment-select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
 }
 
 .table-actions {
