@@ -1,5 +1,5 @@
-import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function ViewAttendance() {
@@ -12,14 +12,15 @@ function ViewAttendance() {
   const [month, setMonth] = useState(currentDate.getMonth() + 1);
   const [year, setYear] = useState(currentDate.getFullYear());
   const [students, setStudents] = useState([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const days = [
-  ...new Set(
-    students.flatMap((student) =>
-      Object.keys(student.attendance).map((day) => Number(day))
-    )
-  ),
-].sort((a, b) => a - b);
+    ...new Set(
+      students.flatMap((student) =>
+        Object.keys(student.attendance).map((day) => Number(day))
+      )
+    ),
+  ].sort((a, b) => a - b);
 
   const loadAttendance = () => {
     axios
@@ -56,6 +57,11 @@ function ViewAttendance() {
     loadAttendance();
   }, []);
 
+  const goTo = (path) => {
+    setSidebarOpen(false);
+    navigate(path);
+  };
+
   const updateAttendanceCell = async (studentId, day, status) => {
     const attendanceDate = `${year}-${String(month).padStart(2, "0")}-${String(
       day
@@ -86,95 +92,145 @@ function ViewAttendance() {
   };
 
   return (
-    <div>
-      <h1>Monthly Attendance</h1>
+    <div className="dashboard-layout">
+      <button className="menu-toggle" onClick={() => setSidebarOpen(true)}>
+        Menu
+      </button>
 
-      <h3>
-        {classInfo.class_name} - Section {classInfo.section_name}
-      </h3>
+      {sidebarOpen && (
+        <div
+          className="sidebar-overlay"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
-      <p>Subject: {classInfo.subject_name}</p>
+      <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+        <h2>SmartSchool</h2>
+        <button onClick={() => goTo("/teacher")}>Dashboard</button>
+        <button onClick={() => goTo("/teacher-classes")}>My Classes</button>
 
-      <button onClick={() => navigate("/teacher-classes")}>Back</button>
+        <button
+          className="logout-btn"
+          onClick={() => {
+            localStorage.clear();
+            navigate("/", { replace: true });
+          }}
+        >
+          Logout
+        </button>
+      </aside>
 
-      <br /><br />
+      <main className="dashboard-main">
+        <section className="teacher-hero">
+          <div>
+            <h1>Monthly Attendance</h1>
+            <p>
+              {classInfo.class_name} - Section {classInfo.section_name} |{" "}
+              {classInfo.subject_name}
+            </p>
+          </div>
+          <div className="hero-actions">
+            <button onClick={() => navigate("/teacher-classes")}>Classes</button>
+          </div>
+        </section>
 
-      <select value={month} onChange={(e) => setMonth(e.target.value)}>
-        <option value="1">January</option>
-        <option value="2">February</option>
-        <option value="3">March</option>
-        <option value="4">April</option>
-        <option value="5">May</option>
-        <option value="6">June</option>
-        <option value="7">July</option>
-        <option value="8">August</option>
-        <option value="9">September</option>
-        <option value="10">October</option>
-        <option value="11">November</option>
-        <option value="12">December</option>
-      </select>
+        <section className="admin-form-panel">
+          <div className="admin-section-header">
+            <h2>Attendance Period</h2>
+            <p>Choose a month and year to load attendance records.</p>
+          </div>
 
-      <input
-        type="number"
-        value={year}
-        onChange={(e) => setYear(e.target.value)}
-      />
+          <div className="admin-form-grid teacher-period-grid">
+            <label>
+              Month
+              <select value={month} onChange={(e) => setMonth(e.target.value)}>
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+              </select>
+            </label>
 
-      <button onClick={loadAttendance}>Load</button>
+            <label>
+              Year
+              <input
+                type="number"
+                value={year}
+                onChange={(e) => setYear(e.target.value)}
+              />
+            </label>
+          </div>
 
-      <br /><br />
+          <div className="form-actions">
+            <button onClick={loadAttendance}>Load Attendance</button>
+          </div>
+        </section>
 
-      <table border="1" cellPadding="6">
-        <thead>
-          <tr>
-            <th>Admission No</th>
-            <th>Student Name</th>
+        <section className="admin-table-panel">
+          <div className="admin-table-wrap">
+            <table className="admin-table attendance-month-table">
+              <thead>
+                <tr>
+                  <th>Admission No</th>
+                  <th>Student Name</th>
 
-            {days.map((day) => (
-              <th key={day}>{day}</th>
-            ))}
+                  {days.map((day) => (
+                    <th key={day}>{day}</th>
+                  ))}
 
-            <th>Total Present</th>
-            <th>Total Absent</th>
-            <th>Total Late</th>
-            <th>Percentage</th>
-          </tr>
-        </thead>
+                  <th>Total Present</th>
+                  <th>Total Absent</th>
+                  <th>Total Late</th>
+                  <th>Percentage</th>
+                </tr>
+              </thead>
 
-        <tbody>
-          {students.map((student) => (
-            <tr key={student.student_id}>
-              <td>{student.admission_no}</td>
-              <td>{student.name}</td>
+              <tbody>
+                {students.map((student) => (
+                  <tr key={student.student_id}>
+                    <td>{student.admission_no}</td>
+                    <td>{student.name}</td>
 
-              {days.map((day) => (
-                <td key={day}>
-                  <select
-                    value={student.attendance[day] || ""}
-                    onChange={(e) =>
-                      updateAttendanceCell(
-                        student.student_id,
-                        day,
-                        e.target.value
-                      )
-                    }
-                  >
-                    <option value="">-</option>
-                    <option value="Present">P</option>
-                    <option value="Absent">A</option>
-                    <option value="Late">L</option>
-                  </select>
-                </td>
-              ))}
+                    {days.map((day) => (
+                      <td key={day}>
+                        <select
+                          className="attendance-cell-select"
+                          value={student.attendance[day] || ""}
+                          onChange={(e) =>
+                            updateAttendanceCell(
+                              student.student_id,
+                              day,
+                              e.target.value
+                            )
+                          }
+                        >
+                          <option value="">-</option>
+                          <option value="Present">P</option>
+                          <option value="Absent">A</option>
+                          <option value="Late">L</option>
+                        </select>
+                      </td>
+                    ))}
 
-              <td>{student.total_present}</td>
-              <td>{student.total_absent}</td>
-              <td>{student.total_late}</td>
-              <td>{calculatePercentage(student)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                    <td>{student.total_present}</td>
+                    <td>{student.total_absent}</td>
+                    <td>{student.total_late}</td>
+                    <td>{calculatePercentage(student)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }

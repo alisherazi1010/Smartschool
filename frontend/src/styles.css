@@ -1170,6 +1170,14 @@ th {
   min-width: 900px;
 }
 
+.attendance-month-table {
+  min-width: 980px;
+}
+
+.assessment-table {
+  min-width: 760px;
+}
+
 .admin-table th,
 .admin-table td {
   padding: 14px;
@@ -1211,6 +1219,23 @@ th {
 .assignment-select:focus {
   border-color: #2563eb;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+}
+
+.attendance-cell-select {
+  width: 58px;
+  min-width: 58px;
+  height: 34px;
+  padding: 4px 6px;
+  border-radius: 8px;
+  border: 1px solid rgba(203, 213, 225, 0.9);
+  background: rgba(255, 255, 255, 0.76);
+  color: #1e293b;
+  font-weight: 800;
+  outline: none;
+}
+
+.teacher-period-grid {
+  grid-template-columns: repeat(2, minmax(180px, 260px));
 }
 
 .table-actions {

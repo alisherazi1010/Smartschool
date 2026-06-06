@@ -6,6 +6,7 @@ function CreateAssessment() {
   const navigate = useNavigate();
   const location = useLocation();
   const classInfo = location.state.classInfo;
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [assessment, setAssessment] = useState({
     assessment_title: "",
@@ -13,6 +14,11 @@ function CreateAssessment() {
     total_marks: "",
     assessment_date: "",
   });
+
+  const goTo = (path) => {
+    setSidebarOpen(false);
+    navigate(path);
+  };
 
   const handleChange = (e) => {
     setAssessment({
@@ -47,65 +53,110 @@ function CreateAssessment() {
   };
 
   return (
-    <div>
-      <h1>Create Assessment</h1>
+    <div className="dashboard-layout">
+      <button className="menu-toggle" onClick={() => setSidebarOpen(true)}>
+        Menu
+      </button>
 
-      <h3>
-        {classInfo.class_name} - Section {classInfo.section_name}
-      </h3>
+      {sidebarOpen && (
+        <div
+          className="sidebar-overlay"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
-      <p>Subject: {classInfo.subject_name}</p>
+      <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+        <h2>SmartSchool</h2>
+        <button onClick={() => goTo("/teacher")}>Dashboard</button>
+        <button onClick={() => goTo("/teacher-classes")}>My Classes</button>
 
-      <input
-        name="assessment_title"
-        placeholder="Assessment Title"
-        value={assessment.assessment_title}
-        onChange={handleChange}
-      />
+        <button
+          className="logout-btn"
+          onClick={() => {
+            localStorage.clear();
+            navigate("/", { replace: true });
+          }}
+        >
+          Logout
+        </button>
+      </aside>
 
-      <br /><br />
+      <main className="dashboard-main">
+        <section className="teacher-hero">
+          <div>
+            <h1>Create Assessment</h1>
+            <p>
+              {classInfo.class_name} - Section {classInfo.section_name} |{" "}
+              {classInfo.subject_name}
+            </p>
+          </div>
+          <div className="hero-actions">
+            <button onClick={() => navigate("/teacher-classes")}>Classes</button>
+          </div>
+        </section>
 
-      <select
-        name="assessment_type"
-        value={assessment.assessment_type}
-        onChange={handleChange}
-      >
-        <option value="">Select Type</option>
-        <option value="Test">Test</option>
-        <option value="Assignment">Assignment</option>
-        <option value="Quiz">Quiz</option>
-        <option value="Project">Project</option>
-        <option value="Presentation">Presentation</option>
-        <option value="Mid Term">Mid Term</option>
-        <option value="Final Term">Final Term</option>
-      </select>
+        <section className="admin-form-panel">
+          <div className="admin-section-header">
+            <h2>Assessment Details</h2>
+            <p>Create a test, assignment, term exam, or other assessment.</p>
+          </div>
 
-      <br /><br />
+          <div className="admin-form-grid">
+            <label>
+              Assessment Title
+              <input
+                name="assessment_title"
+                placeholder="Assessment Title"
+                value={assessment.assessment_title}
+                onChange={handleChange}
+              />
+            </label>
 
-      <input
-        name="total_marks"
-        type="number"
-        placeholder="Total Marks"
-        value={assessment.total_marks}
-        onChange={handleChange}
-      />
+            <label>
+              Type
+              <select
+                name="assessment_type"
+                value={assessment.assessment_type}
+                onChange={handleChange}
+              >
+                <option value="">Select Type</option>
+                <option value="Test">Test</option>
+                <option value="Assignment">Assignment</option>
+                <option value="Quiz">Quiz</option>
+                <option value="Project">Project</option>
+                <option value="Presentation">Presentation</option>
+                <option value="Mid Term">Mid Term</option>
+                <option value="Final Term">Final Term</option>
+              </select>
+            </label>
 
-      <br /><br />
+            <label>
+              Total Marks
+              <input
+                name="total_marks"
+                type="number"
+                placeholder="Total Marks"
+                value={assessment.total_marks}
+                onChange={handleChange}
+              />
+            </label>
 
-      <input
-        name="assessment_date"
-        type="date"
-        value={assessment.assessment_date}
-        onChange={handleChange}
-      />
+            <label>
+              Assessment Date
+              <input
+                name="assessment_date"
+                type="date"
+                value={assessment.assessment_date}
+                onChange={handleChange}
+              />
+            </label>
+          </div>
 
-      <br /><br />
-
-      <button onClick={handleSubmit}>Create Assessment</button>
-
-      <br /><br />
-
-      <button onClick={() => navigate("/teacher-classes")}>Back</button>
+          <div className="form-actions">
+            <button onClick={handleSubmit}>Create Assessment</button>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }

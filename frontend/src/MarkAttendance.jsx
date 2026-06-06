@@ -10,6 +10,7 @@ function MarkAttendance() {
   const [students, setStudents] = useState([]);
   const [attendanceDate, setAttendanceDate] = useState("");
   const [attendance, setAttendance] = useState({});
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     axios
@@ -29,6 +30,11 @@ function MarkAttendance() {
       .catch((err) => console.log(err));
   }, [classInfo]);
 
+  const goTo = (path) => {
+    setSidebarOpen(false);
+    navigate(path);
+  };
+
   const handleStatusChange = (studentId, status) => {
     setAttendance({
       ...attendance,
@@ -37,81 +43,126 @@ function MarkAttendance() {
   };
 
   const handleSubmit = async () => {
-  if (!attendanceDate) {
-    alert("Please select attendance date");
-    return;
-  }
+    if (!attendanceDate) {
+      alert("Please select attendance date");
+      return;
+    }
 
-  try {
-    const res = await axios.post(`${import.meta.env.VITE_API_URL}/attendance`, {
-      assignment_id: classInfo.assignment_id,
-      attendance_date: attendanceDate,
-      attendance,
-    });
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/attendance`, {
+        assignment_id: classInfo.assignment_id,
+        attendance_date: attendanceDate,
+        attendance,
+      });
 
-    alert(res.data.message);
-  } catch (err) {
-    alert("Error saving attendance");
-    console.log(err);
-  }
-};
+      alert(res.data.message);
+    } catch (err) {
+      alert("Error saving attendance");
+      console.log(err);
+    }
+  };
 
   return (
-    <div>
-      <h1>Mark Attendance</h1>
+    <div className="dashboard-layout">
+      <button className="menu-toggle" onClick={() => setSidebarOpen(true)}>
+        Menu
+      </button>
 
-      <h3>
-        {classInfo.class_name} - Section {classInfo.section_name}
-      </h3>
+      {sidebarOpen && (
+        <div
+          className="sidebar-overlay"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
-      <p>Subject: {classInfo.subject_name}</p>
+      <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+        <h2>SmartSchool</h2>
+        <button onClick={() => goTo("/teacher")}>Dashboard</button>
+        <button onClick={() => goTo("/teacher-classes")}>My Classes</button>
 
-      <input
-        type="date"
-        value={attendanceDate}
-        onChange={(e) => setAttendanceDate(e.target.value)}
-      />
+        <button
+          className="logout-btn"
+          onClick={() => {
+            localStorage.clear();
+            navigate("/", { replace: true });
+          }}
+        >
+          Logout
+        </button>
+      </aside>
 
-      <br /><br />
+      <main className="dashboard-main">
+        <section className="teacher-hero">
+          <div>
+            <h1>Mark Attendance</h1>
+            <p>
+              {classInfo.class_name} - Section {classInfo.section_name} |{" "}
+              {classInfo.subject_name}
+            </p>
+          </div>
+          <div className="hero-actions">
+            <button onClick={() => navigate("/teacher-classes")}>Classes</button>
+          </div>
+        </section>
 
-      <table border="1" cellPadding="10">
-        <thead>
-          <tr>
-            <th>Admission No</th>
-            <th>Name</th>
-            <th>Status</th>
-          </tr>
-        </thead>
+        <section className="admin-form-panel compact-form-panel">
+          <div className="admin-section-header">
+            <h2>Attendance Date</h2>
+            <p>Select the date before saving attendance.</p>
+          </div>
 
-        <tbody>
-          {students.map((s) => (
-            <tr key={s.student_id}>
-              <td>{s.admission_no}</td>
-              <td>{s.name}</td>
-              <td>
-                <select
-                  value={attendance[s.student_id] || "Present"}
-                  onChange={(e) =>
-                    handleStatusChange(s.student_id, e.target.value)
-                  }
-                >
-                  <option value="Present">Present</option>
-                  <option value="Absent">Absent</option>
-                  <option value="Late">Late</option>
-                </select>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+          <div className="admin-form-grid single-filter-grid">
+            <label>
+              Date
+              <input
+                type="date"
+                value={attendanceDate}
+                onChange={(e) => setAttendanceDate(e.target.value)}
+              />
+            </label>
+          </div>
+        </section>
 
-      <br />
+        <section className="admin-table-panel">
+          <div className="admin-table-wrap">
+            <table className="admin-table compact-admin-table">
+              <thead>
+                <tr>
+                  <th>Admission No</th>
+                  <th>Name</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
 
-      <button onClick={handleSubmit}>Submit Attendance</button>
+              <tbody>
+                {students.map((s) => (
+                  <tr key={s.student_id}>
+                    <td>{s.admission_no}</td>
+                    <td>{s.name}</td>
+                    <td>
+                      <select
+                        className="assignment-select"
+                        value={attendance[s.student_id] || "Present"}
+                        onChange={(e) =>
+                          handleStatusChange(s.student_id, e.target.value)
+                        }
+                      >
+                        <option value="Present">Present</option>
+                        <option value="Absent">Absent</option>
+                        <option value="Late">Late</option>
+                      </select>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-      <br /><br />
-
-      <button onClick={() => navigate("/teacher-classes")}>Back</button>
+          <div className="form-actions">
+            <button onClick={handleSubmit}>Submit Attendance</button>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }
