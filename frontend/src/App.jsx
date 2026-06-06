@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 
 import Login from "./Login";
 import AdminDashboard from "./AdminDashboard";
@@ -32,7 +32,7 @@ import "./styles.css";
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/admin" element={<AdminDashboard />} />
@@ -63,7 +63,7 @@ function App() {
         <Route path="/admin-student-profile" element={<AdminStudentProfile />} />
         <Route path="/edit-assessment" element={<EditAssessment />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
