@@ -65,6 +65,16 @@ const goTo = (path) => {
       </aside>
 
       <main className="dashboard-main">
+
+
+        {!profile ? (
+    <div className="profile-info-card">
+      <h3>Loading profile...</h3>
+      <p>Please wait</p>
+    </div>
+  ) : (
+    <>
+
         <div className="profile-header-card">
           <div className="profile-avatar">
             {profile.name.charAt(0).toUpperCase()}
@@ -108,6 +118,8 @@ const goTo = (path) => {
             <p>{profile.admission_no}</p>
           </div>
         </div>
+        </>
+        )}
       </main>
     </div>
   );
