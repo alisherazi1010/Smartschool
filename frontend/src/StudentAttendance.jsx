@@ -5,6 +5,12 @@ import axios from "axios";
 function StudentAttendance() {
   const navigate = useNavigate();
   const [attendance, setAttendance] = useState([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+const goTo = (path) => {
+  setSidebarOpen(false);
+  navigate(path);
+};
 
   useEffect(() => {
     const role = localStorage.getItem("role");
@@ -29,7 +35,19 @@ function StudentAttendance() {
 
   return (
 <div className="dashboard-layout">
-      <aside className="sidebar">
+
+      <button className="menu-toggle" onClick={() => setSidebarOpen(true)}>
+      Menu
+    </button>
+
+    {sidebarOpen && (
+      <div
+        className="sidebar-overlay"
+        onClick={() => setSidebarOpen(false)}
+      />
+    )}
+
+    <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <h2>SmartSchool</h2>
 
         <button onClick={() => navigate("/student")}>Dashboard</button>
