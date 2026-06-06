@@ -806,6 +806,10 @@ th {
   gap: 14px;
 }
 
+.teacher-filter-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .admin-filter-grid input {
   width: 100%;
   height: 46px;
@@ -948,6 +952,10 @@ th {
   }
 
   .admin-filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .teacher-filter-grid {
     grid-template-columns: 1fr;
   }
 
