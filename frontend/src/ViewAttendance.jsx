@@ -22,6 +22,15 @@ function ViewAttendance() {
     ),
   ].sort((a, b) => a - b);
 
+  const formatAttendanceDate = (day) => {
+    const date = new Date(Number(year), Number(month) - 1, day);
+
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "2-digit",
+    });
+  };
+
   const loadAttendance = () => {
     axios
       .get(
@@ -183,7 +192,7 @@ function ViewAttendance() {
                   <th>Student Name</th>
 
                   {days.map((day) => (
-                    <th key={day}>{day}</th>
+                    <th key={day}>{formatAttendanceDate(day)}</th>
                   ))}
 
                   <th>Total Present</th>
