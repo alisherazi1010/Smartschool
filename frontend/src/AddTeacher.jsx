@@ -4,6 +4,7 @@ import axios from "axios";
 
 function AddTeacher() {
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [teacher, setTeacher] = useState({
     name: "",
@@ -21,6 +22,11 @@ function AddTeacher() {
       navigate("/");
     }
   }, [navigate]);
+
+  const goTo = (path) => {
+    setSidebarOpen(false);
+    navigate(path);
+  };
 
   const handleChange = (e) => {
     setTeacher({
@@ -42,7 +48,10 @@ function AddTeacher() {
     }
 
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/teachers`, teacher);
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/teachers`,
+        teacher
+      );
       alert(res.data.message);
 
       setTeacher({
@@ -59,54 +68,112 @@ function AddTeacher() {
   };
 
   return (
-    <div>
-      <h1>Add Teacher</h1>
+    <div className="dashboard-layout">
+      <button className="menu-toggle" onClick={() => setSidebarOpen(true)}>
+        Menu
+      </button>
 
-      <input
-        name="name"
-        placeholder="Teacher Name"
-        value={teacher.name}
-        onChange={handleChange}
-      />
-      <br /><br />
+      {sidebarOpen && (
+        <div
+          className="sidebar-overlay"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
-      <input
-        name="email"
-        placeholder="Email"
-        value={teacher.email}
-        onChange={handleChange}
-      />
-      <br /><br />
+      <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+        <h2>SmartSchool</h2>
+        <button onClick={() => goTo("/admin")}>Dashboard</button>
+        <button onClick={() => goTo("/view-students")}>Students</button>
+        <button onClick={() => goTo("/view-teachers")}>Teachers</button>
+        <button onClick={() => goTo("/view-subjects")}>Subjects</button>
+        <button onClick={() => goTo("/view-assignments")}>Assignments</button>
 
-      <input
-        name="password"
-        type="password"
-        placeholder="Password"
-        value={teacher.password}
-        onChange={handleChange}
-      />
-      <br /><br />
+        <button
+          className="logout-btn"
+          onClick={() => {
+            localStorage.clear();
+            navigate("/", { replace: true });
+          }}
+        >
+          Logout
+        </button>
+      </aside>
 
-      <input
-        name="qualification"
-        placeholder="Qualification"
-        value={teacher.qualification}
-        onChange={handleChange}
-      />
-      <br /><br />
+      <main className="dashboard-main">
+        <section className="admin-hero">
+          <div>
+            <h1>Add Teacher</h1>
+            <p>Create a teacher account and profile information.</p>
+          </div>
+          <div className="hero-actions">
+            <button onClick={() => navigate("/admin")}>Dashboard</button>
+          </div>
+        </section>
 
-      <input
-        name="phone"
-        placeholder="Phone"
-        value={teacher.phone}
-        onChange={handleChange}
-      />
-      <br /><br />
+        <section className="admin-form-panel">
+          <div className="admin-section-header">
+            <h2>Teacher Details</h2>
+            <p>All fields are required to create a teacher record.</p>
+          </div>
 
-      <button onClick={handleSubmit}>Add Teacher</button>
-      <br /><br />
+          <div className="admin-form-grid">
+            <label>
+              Teacher Name
+              <input
+                name="name"
+                placeholder="Teacher Name"
+                value={teacher.name}
+                onChange={handleChange}
+              />
+            </label>
 
-      <button onClick={() => navigate("/admin")}>Back to Dashboard</button>
+            <label>
+              Email
+              <input
+                name="email"
+                placeholder="Email"
+                value={teacher.email}
+                onChange={handleChange}
+              />
+            </label>
+
+            <label>
+              Password
+              <input
+                name="password"
+                type="password"
+                placeholder="Password"
+                value={teacher.password}
+                onChange={handleChange}
+              />
+            </label>
+
+            <label>
+              Qualification
+              <input
+                name="qualification"
+                placeholder="Qualification"
+                value={teacher.qualification}
+                onChange={handleChange}
+              />
+            </label>
+
+            <label>
+              Phone
+              <input
+                name="phone"
+                placeholder="Phone"
+                value={teacher.phone}
+                onChange={handleChange}
+              />
+            </label>
+          </div>
+
+          <div className="form-actions">
+            <button onClick={handleSubmit}>Add Teacher</button>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }
