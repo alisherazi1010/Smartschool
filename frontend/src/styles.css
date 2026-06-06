@@ -1234,6 +1234,23 @@ th {
   outline: none;
 }
 
+.marks-input {
+  width: 120px;
+  height: 38px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(203, 213, 225, 0.9);
+  background: rgba(255, 255, 255, 0.76);
+  color: #1e293b;
+  font-weight: 800;
+  outline: none;
+}
+
+.marks-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+}
+
 .teacher-period-grid {
   grid-template-columns: repeat(2, minmax(180px, 260px));
 }
