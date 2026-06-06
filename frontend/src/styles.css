@@ -1622,6 +1622,10 @@ th {
 .student-hero {
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
   padding: 34px;
   margin-bottom: 24px;
   border-radius: 18px;
@@ -1644,7 +1648,8 @@ th {
 }
 
 .student-hero h1,
-.student-hero p {
+.student-hero p,
+.student-hero > * {
   position: relative;
   z-index: 1;
 }
@@ -1716,6 +1721,38 @@ th {
   line-height: 1.45;
 }
 
+.report-type-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.report-type-actions button {
+  min-height: 46px;
+  margin: 0;
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.62);
+  color: #1e3a5f;
+  font-size: 15px;
+  font-weight: 800;
+  box-shadow:
+    0 12px 28px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.report-type-actions button:hover,
+.report-type-actions .active-report-btn {
+  background: #1e3a5f;
+  color: white;
+}
+
+.report-total-row th {
+  background: rgba(30, 58, 95, 0.94);
+  color: white;
+}
+
 @media (max-width: 1100px) {
   .student-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1724,6 +1761,7 @@ th {
 
 @media (max-width: 768px) {
   .student-hero {
+    flex-direction: column;
     padding: 24px;
   }
 
@@ -1754,6 +1792,11 @@ th {
 
   .glass-student-card h2 {
     font-size: 19px;
+  }
+
+  .report-type-actions {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 

@@ -7,11 +7,6 @@ function StudentResults() {
   const [results, setResults] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-const goTo = (path) => {
-  setSidebarOpen(false);
-  navigate(path);
-};
-
   useEffect(() => {
     const role = localStorage.getItem("role");
     const studentId = localStorage.getItem("student_id");
@@ -28,6 +23,11 @@ const goTo = (path) => {
       .catch((err) => console.log(err));
   }, [navigate]);
 
+  const goTo = (path) => {
+    setSidebarOpen(false);
+    navigate(path);
+  };
+
   const getPercentage = (obtained, total) => {
     return ((obtained / total) * 100).toFixed(2);
   };
@@ -35,24 +35,24 @@ const goTo = (path) => {
   return (
     <div className="dashboard-layout">
       <button className="menu-toggle" onClick={() => setSidebarOpen(true)}>
-      Menu
-    </button>
+        Menu
+      </button>
 
-    {sidebarOpen && (
-      <div
-        className="sidebar-overlay"
-        onClick={() => setSidebarOpen(false)}
-      />
-    )}
+      {sidebarOpen && (
+        <div
+          className="sidebar-overlay"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
-    <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+      <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <h2>SmartSchool</h2>
 
-        <button onClick={() => navigate("/student")}>Dashboard</button>
-        <button onClick={() => navigate("/student-profile")}>My Profile</button>
-        <button onClick={() => navigate("/student-attendance")}>My Attendance</button>
-        <button onClick={() => navigate("/student-results")}>My Results</button>
-        <button onClick={() => navigate("/student-report-card")}>Report Card</button>
+        <button onClick={() => goTo("/student")}>Dashboard</button>
+        <button onClick={() => goTo("/student-profile")}>My Profile</button>
+        <button onClick={() => goTo("/student-attendance")}>My Attendance</button>
+        <button onClick={() => goTo("/student-results")}>My Results</button>
+        <button onClick={() => goTo("/student-report-card")}>Report Card</button>
 
         <button
           className="logout-btn"
@@ -64,40 +64,53 @@ const goTo = (path) => {
           Logout
         </button>
       </aside>
-    <main className="dashboard-main">
-      <h1>My Results</h1>
 
-      <button onClick={() => navigate("/student")}>Back</button>
+      <main className="dashboard-main">
+        <section className="student-hero">
+          <div>
+            <h1>My Results</h1>
+            <p>View assessment marks and percentages.</p>
+          </div>
+          <div className="hero-actions">
+            <button onClick={() => navigate("/student")}>Dashboard</button>
+          </div>
+        </section>
 
-      <br /><br />
+        <section className="admin-table-panel">
+          {results.length === 0 ? (
+            <p className="empty-panel-text">No result record found.</p>
+          ) : (
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Subject</th>
+                    <th>Assessment</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>Total Marks</th>
+                    <th>Obtained Marks</th>
+                    <th>Percentage</th>
+                  </tr>
+                </thead>
 
-      <table border="1" cellPadding="10">
-        <thead>
-          <tr>
-            <th>Subject</th>
-            <th>Assessment</th>
-            <th>Type</th>
-            <th>Date</th>
-            <th>Total Marks</th>
-            <th>Obtained Marks</th>
-            <th>Percentage</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {results.map((r, index) => (
-            <tr key={index}>
-              <td>{r.subject_name}</td>
-              <td>{r.assessment_title}</td>
-              <td>{r.assessment_type}</td>
-              <td>{r.assessment_date?.split("T")[0]}</td>
-              <td>{r.total_marks}</td>
-              <td>{r.obtained_marks}</td>
-              <td>{getPercentage(r.obtained_marks, r.total_marks)}%</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                <tbody>
+                  {results.map((r, index) => (
+                    <tr key={index}>
+                      <td>{r.subject_name}</td>
+                      <td>{r.assessment_title}</td>
+                      <td>{r.assessment_type}</td>
+                      <td>{r.assessment_date?.split("T")[0]}</td>
+                      <td>{r.total_marks}</td>
+                      <td>{r.obtained_marks}</td>
+                      <td>{getPercentage(r.obtained_marks, r.total_marks)}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
       </main>
     </div>
   );
