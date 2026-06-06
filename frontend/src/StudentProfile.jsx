@@ -29,7 +29,7 @@ const goTo = (path) => {
     .catch((err) => console.log(err));
 }, [navigate]);
 
-  if (!profile) return <p>Loading...</p>;
+ // if (!profile) return <p>Loading...</p>;
 
   return (
     <div className="dashboard-layout">
