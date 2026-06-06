@@ -5,9 +5,10 @@ import axios from "axios";
 function ViewStudents() {
   const [students, setStudents] = useState([]);
   const [searchName, setSearchName] = useState("");
-const [searchAdmission, setSearchAdmission] = useState("");
-const [searchClass, setSearchClass] = useState("");
-const [searchSection, setSearchSection] = useState("");
+  const [searchAdmission, setSearchAdmission] = useState("");
+  const [searchClass, setSearchClass] = useState("");
+  const [searchSection, setSearchSection] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,7 +32,9 @@ const [searchSection, setSearchSection] = useState("");
     }
 
     try {
-      const res = await axios.delete(`${import.meta.env.VITE_API_URL}/students/${id}`);
+      const res = await axios.delete(
+        `${import.meta.env.VITE_API_URL}/students/${id}`
+      );
       alert(res.data.message);
 
       setStudents(students.filter((s) => s.student_id !== id));
@@ -41,117 +44,165 @@ const [searchSection, setSearchSection] = useState("");
     }
   };
 
+  const goTo = (path) => {
+    setSidebarOpen(false);
+    navigate(path);
+  };
 
+  const filteredStudents = students.filter((student) => {
+    return (
+      student.name.toLowerCase().includes(searchName.toLowerCase()) &&
+      student.admission_no
+        .toLowerCase()
+        .includes(searchAdmission.toLowerCase()) &&
+      student.class_name.toLowerCase().includes(searchClass.toLowerCase()) &&
+      student.section_name.toLowerCase().includes(searchSection.toLowerCase())
+    );
+  });
 
-
-  
-
-const filteredStudents = students.filter((student) => {
   return (
-    student.name.toLowerCase().includes(searchName.toLowerCase()) &&
-    student.admission_no.toLowerCase().includes(searchAdmission.toLowerCase()) &&
-    student.class_name.toLowerCase().includes(searchClass.toLowerCase()) &&
-    student.section_name.toLowerCase().includes(searchSection.toLowerCase())
-  );
-});
+    <div className="dashboard-layout">
+      <button className="menu-toggle" onClick={() => setSidebarOpen(true)}>
+        Menu
+      </button>
 
+      {sidebarOpen && (
+        <div
+          className="sidebar-overlay"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
+      <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+        <h2>SmartSchool</h2>
+        <button onClick={() => goTo("/admin")}>Dashboard</button>
+        <button onClick={() => goTo("/view-students")}>Students</button>
+        <button onClick={() => goTo("/view-teachers")}>Teachers</button>
+        <button onClick={() => goTo("/view-subjects")}>Subjects</button>
+        <button onClick={() => goTo("/view-assignments")}>Assignments</button>
 
+        <button
+          className="logout-btn"
+          onClick={() => {
+            localStorage.clear();
+            navigate("/", { replace: true });
+          }}
+        >
+          Logout
+        </button>
+      </aside>
 
-  return (
-    <div>
-      <h1>View Students</h1>
+      <main className="dashboard-main">
+        <section className="admin-hero">
+          <div>
+            <h1>View Students</h1>
+            <p>Search, review, update, and open student profiles.</p>
+          </div>
+          <span className="admin-hero-badge">
+            {filteredStudents.length} shown
+          </span>
+        </section>
 
-      <button onClick={() => navigate("/admin")}>Back to Dashboard</button>
+        <section className="admin-list-panel">
+          <div className="admin-section-header">
+            <h2>Search Students</h2>
+            <p>Filter records by name, admission number, class, or section.</p>
+          </div>
 
-      <br /><br />
+          <div className="admin-filter-grid">
+            <input
+              type="text"
+              placeholder="Search Name"
+              value={searchName}
+              onChange={(e) => setSearchName(e.target.value)}
+            />
 
+            <input
+              type="text"
+              placeholder="Admission No"
+              value={searchAdmission}
+              onChange={(e) => setSearchAdmission(e.target.value)}
+            />
 
-<h3>Search Students</h3>
+            <input
+              type="text"
+              placeholder="Class"
+              value={searchClass}
+              onChange={(e) => setSearchClass(e.target.value)}
+            />
 
-<input
-  type="text"
-  placeholder="Search Name"
-  value={searchName}
-  onChange={(e) => setSearchName(e.target.value)}
-/>
+            <input
+              type="text"
+              placeholder="Section"
+              value={searchSection}
+              onChange={(e) => setSearchSection(e.target.value)}
+            />
+          </div>
+        </section>
 
-<input
-  type="text"
-  placeholder="Admission No"
-  value={searchAdmission}
-  onChange={(e) => setSearchAdmission(e.target.value)}
-/>
+        <section className="admin-table-panel">
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Admission No</th>
+                  <th>Class</th>
+                  <th>Section</th>
+                  <th>Guardian Name</th>
+                  <th>Guardian Phone</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
 
-<input
-  type="text"
-  placeholder="Class"
-  value={searchClass}
-  onChange={(e) => setSearchClass(e.target.value)}
-/>
+              <tbody>
+                {filteredStudents.map((s) => (
+                  <tr key={s.student_id}>
+                    <td>{s.student_id}</td>
+                    <td>{s.name}</td>
+                    <td>{s.email}</td>
+                    <td>{s.admission_no}</td>
+                    <td>{s.class_name}</td>
+                    <td>{s.section_name}</td>
+                    <td>{s.guardian_name}</td>
+                    <td>{s.guardian_phone}</td>
+                    <td>
+                      <div className="table-actions">
+                        <button
+                          onClick={() =>
+                            navigate("/edit-student", { state: { student: s } })
+                          }
+                        >
+                          Edit
+                        </button>
 
-<input
-  type="text"
-  placeholder="Section"
-  value={searchSection}
-  onChange={(e) => setSearchSection(e.target.value)}
-/>
+                        <button
+                          className="danger-table-btn"
+                          onClick={() => handleDelete(s.student_id)}
+                        >
+                          Delete
+                        </button>
 
-<br /><br />
-
-
-
-
-
-
-
-      <table border="1" cellPadding="10">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Admission No</th>
-            <th>Class</th>
-            <th>Section</th>
-            <th>Guardian Name</th>
-            <th>Guardian Phone</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {filteredStudents.map((s) => (
-            <tr key={s.student_id}>
-              <td>{s.student_id}</td>
-              <td>{s.name}</td>
-              <td>{s.email}</td>
-              <td>{s.admission_no}</td>
-              <td>{s.class_name}</td>
-              <td>{s.section_name}</td>
-              <td>{s.guardian_name}</td>
-              <td>{s.guardian_phone}</td>
-              <td>
-                <button
-                  onClick={() =>
-                    navigate("/edit-student", { state: { student: s } })
-                  }
-                >
-                  Edit
-                </button>
-
-                <button onClick={() => handleDelete(s.student_id)}>
-                  Delete
-                </button>
-
-                <button onClick={() => navigate("/admin-student-profile", { state: { student: s } })}>
-  Profile
-</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                        <button
+                          onClick={() =>
+                            navigate("/admin-student-profile", {
+                              state: { student: s },
+                            })
+                          }
+                        >
+                          Profile
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }
