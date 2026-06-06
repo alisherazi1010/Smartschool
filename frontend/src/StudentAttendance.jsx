@@ -28,7 +28,29 @@ function StudentAttendance() {
   };
 
   return (
-    <div>
+<div className="dashboard-layout">
+      <aside className="sidebar">
+        <h2>SmartSchool</h2>
+
+        <button onClick={() => navigate("/student")}>Dashboard</button>
+        <button onClick={() => navigate("/student-profile")}>My Profile</button>
+        <button onClick={() => navigate("/student-attendance")}>My Attendance</button>
+        <button onClick={() => navigate("/student-results")}>My Results</button>
+        <button onClick={() => navigate("/student-report-card")}>Report Card</button>
+
+        <button
+          className="logout-btn"
+          onClick={() => {
+            localStorage.clear();
+            navigate("/student-login", { replace: true });
+          }}
+        >
+          Logout
+        </button>
+      </aside>
+
+    <main className="dashboard-main">
+
       <h1>My Attendance</h1>
 
       <button onClick={() => navigate("/student")}>Back</button>
@@ -64,6 +86,7 @@ function StudentAttendance() {
           ))}
         </tbody>
       </table>
+    </main>
     </div>
   );
 }
