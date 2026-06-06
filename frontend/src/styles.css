@@ -643,6 +643,34 @@ th {
   box-shadow: 0 12px 28px rgba(251, 146, 60, 0.2);
 }
 
+.hero-actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.hero-actions button {
+  min-height: 40px;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.62);
+  color: #1e3a5f;
+  font-weight: 800;
+  box-shadow:
+    0 12px 28px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.hero-actions button:hover {
+  background: #1e3a5f;
+  color: white;
+}
+
 .admin-stats-grid {
   margin-bottom: 26px;
 }
@@ -936,6 +964,11 @@ th {
   .admin-hero {
     flex-direction: column;
     padding: 24px;
+  }
+
+  .hero-actions {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .admin-hero h1 {

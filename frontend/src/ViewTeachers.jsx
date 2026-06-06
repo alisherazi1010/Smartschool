@@ -96,9 +96,12 @@ function ViewTeachers() {
             <h1>View Teachers</h1>
             <p>Review teacher records, qualifications, and contact details.</p>
           </div>
-          <span className="admin-hero-badge">
-            {filteredTeachers.length} shown
-          </span>
+          <div className="hero-actions">
+            <span className="admin-hero-badge">
+              {filteredTeachers.length} shown
+            </span>
+            <button onClick={() => navigate("/admin")}>Dashboard</button>
+          </div>
         </section>
 
         <section className="admin-list-panel">

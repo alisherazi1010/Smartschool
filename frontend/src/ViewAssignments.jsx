@@ -84,9 +84,12 @@ function ViewAssignments() {
             <h1>Teacher Assignments</h1>
             <p>Review which teachers are assigned to classes and subjects.</p>
           </div>
-          <span className="admin-hero-badge">
-            {filteredAssignments.length} shown
-          </span>
+          <div className="hero-actions">
+            <span className="admin-hero-badge">
+              {filteredAssignments.length} shown
+            </span>
+            <button onClick={() => navigate("/admin")}>Dashboard</button>
+          </div>
         </section>
 
         <section className="admin-list-panel">

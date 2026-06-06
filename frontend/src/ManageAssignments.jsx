@@ -138,7 +138,10 @@ function ManageAssignments() {
             <h1>Manage Assignments</h1>
             <p>Change teacher, class, section, or subject assignments.</p>
           </div>
-          <span className="admin-hero-badge">{assignments.length} total</span>
+          <div className="hero-actions">
+            <span className="admin-hero-badge">{assignments.length} total</span>
+            <button onClick={() => navigate("/admin")}>Dashboard</button>
+          </div>
         </section>
 
         <section className="admin-table-panel">
