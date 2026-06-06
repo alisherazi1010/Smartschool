@@ -42,48 +42,61 @@ function TeacherDashboard() {
       </aside>
 
       <main className="dashboard-main">
-        <h1>Teacher Dashboard</h1>
-        <p>Welcome, {name}</p>
+        <section className="teacher-hero">
+          <div>
+            <h1>Teacher Dashboard</h1>
+            <p>Welcome, {name}</p>
+          </div>
+          <span className="teacher-hero-badge">Today</span>
+        </section>
 
-        <div className="stats-grid">
+        <div className="teacher-dashboard-grid">
           <div
-            className="stat-card clickable-card"
+            className="teacher-dashboard-card"
             onClick={() => navigate("/teacher-classes")}
           >
+            <span className="teacher-card-icon">CL</span>
             <h3>My Classes</h3>
             <p>View assigned classes and subjects</p>
           </div>
 
           <div
-            className="stat-card clickable-card"
+            className="teacher-dashboard-card"
             onClick={() => navigate("/teacher-classes")}
           >
+            <span className="teacher-card-icon">AT</span>
             <h3>Attendance</h3>
             <p>Mark or view attendance</p>
           </div>
 
           <div
-            className="stat-card clickable-card"
+            className="teacher-dashboard-card"
             onClick={() => navigate("/teacher-classes")}
           >
+            <span className="teacher-card-icon">AS</span>
             <h3>Assessments</h3>
             <p>Create tests, assignments, mid/final terms</p>
           </div>
 
           <div
-            className="stat-card clickable-card"
+            className="teacher-dashboard-card"
             onClick={() => navigate("/teacher-classes")}
           >
+            <span className="teacher-card-icon">RS</span>
             <h3>Results</h3>
             <p>Enter and view student marks</p>
           </div>
         </div>
 
-        <h2>Quick Actions</h2>
+        <div className="teacher-section-header">
+          <h2>Quick Actions</h2>
+          <p>Open your assigned classes to manage attendance and assessments.</p>
+        </div>
 
-        <div className="action-grid">
+        <div className="teacher-action-row">
           <button onClick={() => navigate("/teacher-classes")}>
-            Open My Classes
+            <span className="teacher-action-icon">GO</span>
+            <span>Open My Classes</span>
           </button>
         </div>
       </main>
