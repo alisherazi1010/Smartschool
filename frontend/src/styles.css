@@ -810,6 +810,10 @@ th {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.single-filter-grid {
+  grid-template-columns: minmax(220px, 420px);
+}
+
 .admin-filter-grid input {
   width: 100%;
   height: 46px;
@@ -841,6 +845,10 @@ th {
   overflow: hidden;
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.62);
+}
+
+.compact-admin-table {
+  min-width: 520px;
 }
 
 .admin-table th,
@@ -956,6 +964,10 @@ th {
   }
 
   .teacher-filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .single-filter-grid {
     grid-template-columns: 1fr;
   }
 
