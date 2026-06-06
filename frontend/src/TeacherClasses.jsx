@@ -61,7 +61,7 @@ const [sidebarOpen, setSidebarOpen] = useState(false);
         </button>
       </aside>
 
-    <div>
+    <main className="dashboard-main">
       <h1>My Classes</h1>
 
       <button onClick={() => navigate("/teacher")}>Back</button>
@@ -72,7 +72,7 @@ const [sidebarOpen, setSidebarOpen] = useState(false);
         <p>No classes assigned yet.</p>
       ) : (
         classes.map((c) => (
-          <div key={c.assignment_id} style={{ border: "1px solid black", padding: "10px", margin: "10px" }}>
+          <div key={c.assignment_id} className="class-card">
             <h3>{c.class_name} - Section {c.section_name}</h3>
             <p>Subject: {c.subject_name}</p>
 
@@ -107,7 +107,7 @@ const [sidebarOpen, setSidebarOpen] = useState(false);
           </div>
         ))
       )}
-    </div>
+    </main>
     </div>
   );
 }
