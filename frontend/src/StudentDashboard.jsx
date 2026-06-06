@@ -50,37 +50,29 @@ const goTo = (path) => {
         </div>
 
         <div className="student-grid">
-          <div
-            className="student-card profile-card"
-            onClick={() => navigate("/student-profile")}
-          >
-            <h2>👤 My Profile</h2>
-            <p>Personal and class information</p>
-          </div>
+          <div className="student-card glass-student-card" onClick={() => navigate("/student-profile")}>
+    <span className="student-card-icon">👤</span>
+    <h2>My Profile</h2>
+    <p>Personal and class information</p>
+  </div>
 
-          <div
-            className="student-card attendance-card"
-            onClick={() => navigate("/student-attendance")}
-          >
-            <h2>📅 Attendance</h2>
-            <p>Track your attendance record</p>
-          </div>
+  <div className="student-card glass-student-card" onClick={() => navigate("/student-attendance")}>
+    <span className="student-card-icon">📅</span>
+    <h2>Attendance</h2>
+    <p>Track your attendance record</p>
+  </div>
 
-          <div
-            className="student-card result-card"
-            onClick={() => navigate("/student-results")}
-          >
-            <h2>📊 Results</h2>
-            <p>View assessments and marks</p>
-          </div>
+  <div className="student-card glass-student-card" onClick={() => navigate("/student-results")}>
+    <span className="student-card-icon">📊</span>
+    <h2>Results</h2>
+    <p>View assessments and marks</p>
+  </div>
 
-          <div
-            className="student-card report-card-card"
-            onClick={() => navigate("/student-report-card")}
-          >
-            <h2>🏆 Report Card</h2>
-            <p>Mid Term & Final Term reports</p>
-          </div>
+  <div className="student-card glass-student-card" onClick={() => navigate("/student-report-card")}>
+    <span className="student-card-icon">🏆</span>
+    <h2>Report Card</h2>
+    <p>Mid Term and Final Term reports</p>
+  </div>
         </div>
       </main>
     </div>

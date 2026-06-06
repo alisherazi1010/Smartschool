@@ -603,61 +603,143 @@ th {
 
 /*studentdashboard*/
 
+/* student dashboard */
+
 .student-hero {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  color: white;
-  padding: 30px;
-  border-radius: 16px;
-  margin-bottom: 25px;
+  position: relative;
+  overflow: hidden;
+  padding: 34px;
+  margin-bottom: 24px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.48);
+  box-shadow:
+    0 22px 55px rgba(15, 23, 42, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(18px);
+}
+
+.student-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 18% 10%, rgba(96, 165, 250, 0.28), transparent 34%),
+    radial-gradient(circle at 88% 24%, rgba(251, 146, 60, 0.2), transparent 30%);
+  pointer-events: none;
+}
+
+.student-hero h1,
+.student-hero p {
+  position: relative;
+  z-index: 1;
 }
 
 .student-hero h1 {
   margin: 0;
+  color: #1e293b;
   font-size: 34px;
+  font-weight: 800;
 }
 
 .student-hero p {
-  margin-top: 10px;
-  opacity: 0.9;
+  margin: 10px 0 0;
+  color: #475569;
+  font-size: 17px;
+  font-weight: 600;
 }
 
 .student-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
 }
 
-.student-card {
-  color: white;
-  padding: 30px;
-  border-radius: 16px;
+.glass-student-card {
+  min-height: 210px;
+  color: #243b5a;
+  padding: 24px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.48);
+  box-shadow:
+    0 18px 42px rgba(15, 23, 42, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(18px);
   cursor: pointer;
-  transition: 0.25s;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
 }
 
-.student-card:hover {
+.glass-student-card:hover {
   transform: translateY(-6px);
+  background: rgba(255, 255, 255, 0.64);
+  box-shadow: 0 24px 55px rgba(15, 23, 42, 0.16);
 }
 
-.profile-card {
-  background: #2563eb;
+.student-card-icon {
+  width: 62px;
+  height: 62px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.62);
+  font-size: 28px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
-.attendance-card {
-  background: #16a34a;
+.glass-student-card h2 {
+  margin: 0 0 8px;
+  color: #1e293b;
+  font-size: 22px;
+  font-weight: 800;
 }
 
-.result-card {
-  background: #f59e0b;
+.glass-student-card p {
+  margin: 0;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.45;
 }
 
-.report-card-card {
-  background: #7c3aed;
+@media (max-width: 1100px) {
+  .student-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 768px) {
+  .student-hero {
+    padding: 24px;
+  }
+
+  .student-hero h1 {
+    font-size: 25px;
+  }
+
   .student-grid {
     grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .glass-student-card {
+    min-height: 118px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 16px;
+    align-items: center;
+  }
+
+  .student-card-icon {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 0;
+    grid-row: span 2;
+    font-size: 22px;
+  }
+
+  .glass-student-card h2 {
+    font-size: 19px;
   }
 }
 
