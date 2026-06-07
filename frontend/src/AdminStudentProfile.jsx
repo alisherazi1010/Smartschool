@@ -28,6 +28,11 @@ function AdminStudentProfile() {
     navigate(path);
   };
 
+  const formatDate = (value) => {
+    if (!value) return "-";
+    return value.split("T")[0];
+  };
+
   const getAttendancePercentage = (item) => {
     if (item.total_classes === 0) return "0%";
     return Math.round((item.present_count / item.total_classes) * 100) + "%";
@@ -124,6 +129,11 @@ function AdminStudentProfile() {
           <div className="profile-info-card">
             <h3>Admission No</h3>
             <p>{student.admission_no}</p>
+          </div>
+
+          <div className="profile-info-card">
+            <h3>Admission Date</h3>
+            <p>{formatDate(student.admission_date)}</p>
           </div>
         </section>
 

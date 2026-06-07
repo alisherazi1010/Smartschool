@@ -28,6 +28,7 @@ function TeacherDashboard() {
         <h2>SmartSchool</h2>
 
         <button onClick={() => goTo("/teacher")}>Dashboard</button>
+        <button onClick={() => goTo("/teacher-profile")}>My Profile</button>
         <button onClick={() => goTo("/teacher-classes")}>My Classes</button>
 
         <button
@@ -51,6 +52,15 @@ function TeacherDashboard() {
         </section>
 
         <div className="teacher-dashboard-grid">
+          <div
+            className="teacher-dashboard-card"
+            onClick={() => navigate("/teacher-profile")}
+          >
+            <span className="teacher-card-icon">PF</span>
+            <h3>My Profile</h3>
+            <p>View account, contact, and joining details</p>
+          </div>
+
           <div
             className="teacher-dashboard-card"
             onClick={() => navigate("/teacher-classes")}

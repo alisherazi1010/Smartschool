@@ -49,6 +49,11 @@ function ViewStudents() {
     navigate(path);
   };
 
+  const formatDate = (value) => {
+    if (!value) return "-";
+    return value.split("T")[0];
+  };
+
   const filteredStudents = students.filter((student) => {
     return (
       student.name.toLowerCase().includes(searchName.toLowerCase()) &&
@@ -152,6 +157,7 @@ function ViewStudents() {
                   <th>Name</th>
                   <th>Email</th>
                   <th>Admission No</th>
+                  <th>Admission Date</th>
                   <th>Class</th>
                   <th>Section</th>
                   <th>Guardian Name</th>
@@ -167,6 +173,7 @@ function ViewStudents() {
                     <td>{s.name}</td>
                     <td>{s.email}</td>
                     <td>{s.admission_no}</td>
+                    <td>{formatDate(s.admission_date)}</td>
                     <td>{s.class_name}</td>
                     <td>{s.section_name}</td>
                     <td>{s.guardian_name}</td>

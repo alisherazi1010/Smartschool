@@ -48,6 +48,11 @@ function ViewTeachers() {
     navigate(path);
   };
 
+  const formatDate = (value) => {
+    if (!value) return "-";
+    return value.split("T")[0];
+  };
+
   const filteredTeachers = teachers.filter((teacher) => {
     return (
       teacher.name.toLowerCase().includes(searchName.toLowerCase()) &&
@@ -144,6 +149,7 @@ function ViewTeachers() {
                   <th>Email</th>
                   <th>Qualification</th>
                   <th>Phone</th>
+                  <th>Joining Date</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -156,6 +162,7 @@ function ViewTeachers() {
                     <td>{t.email}</td>
                     <td>{t.qualification}</td>
                     <td>{t.phone}</td>
+                    <td>{formatDate(t.joining_date)}</td>
                     <td>
                       <div className="table-actions">
                         <button

@@ -3,6 +3,7 @@ import { HashRouter, Routes, Route } from "react-router-dom";
 import Login from "./Login";
 import AdminDashboard from "./AdminDashboard";
 import TeacherDashboard from "./TeacherDashboard";
+import TeacherProfile from "./TeacherProfile";
 import StudentDashboard from "./StudentDashboard";
 import AddStudent from "./AddStudent";
 import ViewStudents from "./ViewStudents";
@@ -38,6 +39,7 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/teacher" element={<TeacherDashboard />} />
+        <Route path="/teacher-profile" element={<TeacherProfile />} />
         <Route path="/student" element={<StudentDashboard />} />
         <Route path="/add-student" element={<AddStudent />} />
         <Route path="/view-students" element={<ViewStudents />} />

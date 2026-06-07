@@ -6,7 +6,15 @@ function EditTeacher() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [teacher, setTeacher] = useState(location.state.teacher);
+  const formatDateInput = (value) => {
+    if (!value) return "";
+    return value.split("T")[0];
+  };
+
+  const [teacher, setTeacher] = useState({
+    ...location.state.teacher,
+    joining_date: formatDateInput(location.state.teacher.joining_date),
+  });
 
   const handleChange = (e) => {
     setTeacher({
@@ -48,6 +56,14 @@ function EditTeacher() {
       <br /><br />
 
       <input name="phone" value={teacher.phone} onChange={handleChange} />
+      <br /><br />
+
+      <input
+        name="joining_date"
+        type="date"
+        value={teacher.joining_date || ""}
+        onChange={handleChange}
+      />
       <br /><br />
 
       <button onClick={handleUpdate}>Update Teacher</button>

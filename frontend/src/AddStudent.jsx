@@ -11,6 +11,7 @@ function AddStudent() {
     email: "",
     password: "",
     admission_no: "",
+    admission_date: "",
     class_id: "",
     section_id: "",
     guardian_name: "",
@@ -63,6 +64,7 @@ function AddStudent() {
         email: "",
         password: "",
         admission_no: "",
+        admission_date: "",
         class_id: "",
         section_id: "",
         guardian_name: "",
@@ -161,6 +163,16 @@ function AddStudent() {
                 name="admission_no"
                 placeholder="Admission No"
                 value={student.admission_no}
+                onChange={handleChange}
+              />
+            </label>
+
+            <label>
+              Admission Date
+              <input
+                name="admission_date"
+                type="date"
+                value={student.admission_date}
                 onChange={handleChange}
               />
             </label>

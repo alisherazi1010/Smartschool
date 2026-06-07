@@ -6,7 +6,15 @@ function EditStudent() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [student, setStudent] = useState(location.state.student);
+  const formatDateInput = (value) => {
+    if (!value) return "";
+    return value.split("T")[0];
+  };
+
+  const [student, setStudent] = useState({
+    ...location.state.student,
+    admission_date: formatDateInput(location.state.student.admission_date),
+  });
 
   const handleChange = (e) => {
     setStudent({
@@ -43,6 +51,14 @@ function EditStudent() {
       <input
         name="admission_no"
         value={student.admission_no}
+        onChange={handleChange}
+      />
+      <br /><br />
+
+      <input
+        name="admission_date"
+        type="date"
+        value={student.admission_date || ""}
         onChange={handleChange}
       />
       <br /><br />

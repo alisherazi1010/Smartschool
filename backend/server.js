@@ -51,6 +51,7 @@ app.post("/students", (req, res) => {
     admission_no,
     class_id,
     section_id,
+    admission_date,
     guardian_name,
     guardian_phone,
   } = req.body;
@@ -65,9 +66,9 @@ app.post("/students", (req, res) => {
 
       db.query(
         `INSERT INTO students 
-        (user_id, admission_no, class_id, section_id, guardian_name, guardian_phone) 
-        VALUES (?, ?, ?, ?, ?, ?)`,
-        [userId, admission_no, class_id, section_id, guardian_name, guardian_phone],
+        (user_id, admission_no, class_id, section_id, admission_date, guardian_name, guardian_phone) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [userId, admission_no, class_id, section_id, admission_date, guardian_name, guardian_phone],
         (err) => {
           if (err) return res.status(500).json(err);
 
@@ -83,9 +84,14 @@ app.get("/students", (req, res) => {
   const query = `
     SELECT 
       students.student_id,
+      students.class_id,
+      students.section_id,
       users.name,
       users.email,
       students.admission_no,
+      students.admission_date,
+      students.leaving_date,
+      students.status,
       classes.class_name,
       sections.section_name,
       students.guardian_name,
@@ -149,6 +155,9 @@ app.put("/students/:id", (req, res) => {
     admission_no,
     class_id,
     section_id,
+    admission_date,
+    leaving_date,
+    status,
     guardian_name,
     guardian_phone,
   } = req.body;
@@ -173,12 +182,15 @@ app.put("/students/:id", (req, res) => {
 
           db.query(
             `UPDATE students 
-             SET admission_no=?, class_id=?, section_id=?, guardian_name=?, guardian_phone=? 
+             SET admission_no=?, class_id=?, section_id=?, admission_date=?, leaving_date=?, status=?, guardian_name=?, guardian_phone=? 
              WHERE student_id=?`,
             [
               admission_no,
               class_id,
               section_id,
+              admission_date || null,
+              leaving_date || null,
+              status || "active",
               guardian_name,
               guardian_phone,
               studentId,
@@ -206,7 +218,8 @@ app.post("/teachers", (req, res) => {
     email,
     password,
     qualification,
-    phone
+    phone,
+    joining_date
   } = req.body;
 
   db.query(
@@ -218,8 +231,8 @@ app.post("/teachers", (req, res) => {
       const userId = userResult.insertId;
 
       db.query(
-        "INSERT INTO teachers (user_id, qualification, phone) VALUES (?, ?, ?)",
-        [userId, qualification, phone],
+        "INSERT INTO teachers (user_id, qualification, phone, joining_date) VALUES (?, ?, ?, ?)",
+        [userId, qualification, phone, joining_date],
         (err) => {
           if (err) return res.status(500).json(err);
 
@@ -246,7 +259,10 @@ app.get("/teachers", (req, res) => {
       users.name,
       users.email,
       teachers.qualification,
-      teachers.phone
+      teachers.phone,
+      teachers.joining_date,
+      teachers.leaving_date,
+      teachers.status
     FROM teachers
     JOIN users
       ON teachers.user_id = users.user_id
@@ -256,6 +272,37 @@ app.get("/teachers", (req, res) => {
     if (err) return res.status(500).json(err);
 
     res.json(result);
+  });
+});
+
+app.get("/teacher-profile/:userId", (req, res) => {
+  const userId = req.params.userId;
+
+  const query = `
+    SELECT
+      teachers.teacher_id,
+      teachers.qualification,
+      teachers.phone,
+      teachers.joining_date,
+      teachers.leaving_date,
+      teachers.status,
+      users.user_id,
+      users.name,
+      users.email
+    FROM teachers
+    JOIN users
+      ON teachers.user_id = users.user_id
+    WHERE teachers.user_id = ?
+  `;
+
+  db.query(query, [userId], (err, result) => {
+    if (err) return res.status(500).json(err);
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+
+    res.json(result[0]);
   });
 });
 
@@ -293,7 +340,7 @@ app.delete("/teachers/:id", (req, res) => {
 
 app.put("/teachers/:id", (req, res) => {
   const teacherId = req.params.id;
-  const { name, email, qualification, phone } = req.body;
+  const { name, email, qualification, phone, joining_date, leaving_date, status } = req.body;
 
   db.query(
     "SELECT user_id FROM teachers WHERE teacher_id = ?",
@@ -314,8 +361,8 @@ app.put("/teachers/:id", (req, res) => {
           if (err) return res.status(500).json(err);
 
           db.query(
-            "UPDATE teachers SET qualification=?, phone=? WHERE teacher_id=?",
-            [qualification, phone, teacherId],
+            "UPDATE teachers SET qualification=?, phone=?, joining_date=?, leaving_date=?, status=? WHERE teacher_id=?",
+            [qualification, phone, joining_date || null, leaving_date || null, status || "active", teacherId],
             (err) => {
               if (err) return res.status(500).json(err);
 
@@ -807,6 +854,9 @@ app.get("/student-profile/:studentId", (req, res) => {
     SELECT
       students.student_id,
       students.admission_no,
+      students.admission_date,
+      students.leaving_date,
+      students.status,
       users.name,
       users.email,
       classes.class_name,

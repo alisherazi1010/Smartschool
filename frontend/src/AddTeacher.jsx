@@ -12,6 +12,7 @@ function AddTeacher() {
     password: "",
     qualification: "",
     phone: "",
+    joining_date: "",
   });
 
   useEffect(() => {
@@ -60,6 +61,7 @@ function AddTeacher() {
         password: "",
         qualification: "",
         phone: "",
+        joining_date: "",
       });
     } catch (err) {
       alert("Error adding teacher");
@@ -164,6 +166,16 @@ function AddTeacher() {
                 name="phone"
                 placeholder="Phone"
                 value={teacher.phone}
+                onChange={handleChange}
+              />
+            </label>
+
+            <label>
+              Joining Date
+              <input
+                name="joining_date"
+                type="date"
+                value={teacher.joining_date}
                 onChange={handleChange}
               />
             </label>

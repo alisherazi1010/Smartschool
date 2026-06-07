@@ -68,6 +68,7 @@ function CreateAssessment() {
       <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <h2>SmartSchool</h2>
         <button onClick={() => goTo("/teacher")}>Dashboard</button>
+        <button onClick={() => goTo("/teacher-profile")}>My Profile</button>
         <button onClick={() => goTo("/teacher-classes")}>My Classes</button>
 
         <button
