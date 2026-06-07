@@ -134,7 +134,7 @@ function ViewAssignments() {
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>ID</th>
+                  <th>Assignment ID</th>
                   <th>Teacher</th>
                   <th>Class</th>
                   <th>Section</th>

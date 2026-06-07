@@ -149,7 +149,7 @@ function ManageAssignments() {
             <table className="admin-table manage-assignment-table">
               <thead>
                 <tr>
-                  <th>ID</th>
+                  <th>Assignment ID</th>
                   <th>Teacher</th>
                   <th>Class</th>
                   <th>Section</th>
