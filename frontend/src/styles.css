@@ -2020,9 +2020,11 @@ th {
 .class-timetable-list {
   display: grid;
   gap: 22px;
+  min-width: 0;
 }
 
 .class-timetable-panel {
+  min-width: 0;
   padding: 16px;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.72);
@@ -2039,8 +2041,33 @@ th {
   font-weight: 900;
 }
 
+.timetable-scroll-wrap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 10px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.timetable-scroll-wrap::-webkit-scrollbar {
+  height: 10px;
+}
+
+.timetable-scroll-wrap::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(203, 213, 225, 0.5);
+}
+
+.timetable-scroll-wrap::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(30, 58, 95, 0.72);
+}
+
 .timetable-table {
   min-width: 1120px;
+  width: max-content;
   table-layout: fixed;
   border-spacing: 0 8px;
   white-space: normal;
@@ -2157,6 +2184,7 @@ th {
 
   .timetable-table {
     min-width: 880px;
+    width: max-content;
     display: table;
   }
 

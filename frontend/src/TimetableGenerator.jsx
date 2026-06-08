@@ -404,7 +404,7 @@ function TimetableGenerator() {
                     </h3>
                   </div>
 
-                  <div className="admin-table-wrap">
+                  <div className="admin-table-wrap timetable-scroll-wrap">
                     <table className="admin-table timetable-table">
                       <thead>
                         <tr>
