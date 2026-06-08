@@ -522,22 +522,92 @@ app.delete("/teacher-assignments/:id", (req, res) => {
     if (tableErr) return res.status(500).json(tableErr);
 
     db.query(
-      "DELETE FROM timetable_slots WHERE assignment_id = ?",
+      `SELECT class_id, section_id, subject_id
+       FROM teacher_assignments
+       WHERE assignment_id = ?`,
       [assignmentId],
-      (slotErr) => {
-        if (slotErr) return res.status(500).json(slotErr);
+      (findErr, assignmentResult) => {
+        if (findErr) return res.status(500).json(findErr);
+
+        if (assignmentResult.length === 0) {
+          return res.status(404).json({ message: "Assignment not found" });
+        }
+
+        const assignment = assignmentResult[0];
 
         db.query(
-          "DELETE FROM teacher_assignments WHERE assignment_id = ?",
-          [assignmentId],
-          (err, result) => {
-            if (err) return res.status(500).json(err);
+          `SELECT assignment_id
+           FROM teacher_assignments
+           WHERE class_id = ?
+             AND section_id = ?
+             AND subject_id = ?
+             AND assignment_id <> ?
+           ORDER BY assignment_id
+           LIMIT 1`,
+          [
+            assignment.class_id,
+            assignment.section_id,
+            assignment.subject_id,
+            assignmentId,
+          ],
+          (duplicateErr, duplicateResult) => {
+            if (duplicateErr) return res.status(500).json(duplicateErr);
 
-            if (result.affectedRows === 0) {
-              return res.status(404).json({ message: "Assignment not found" });
+            const keepAssignmentId = duplicateResult[0]?.assignment_id;
+            const queries = [];
+
+            if (keepAssignmentId) {
+              queries.push({
+                sql: "UPDATE attendance SET assignment_id = ? WHERE assignment_id = ?",
+                values: [keepAssignmentId, assignmentId],
+              });
+              queries.push({
+                sql: "UPDATE assessments SET assignment_id = ? WHERE assignment_id = ?",
+                values: [keepAssignmentId, assignmentId],
+              });
             }
 
-            res.json({ message: "Assignment deleted successfully" });
+            queries.push({
+              sql: "DELETE FROM timetable_slots WHERE assignment_id = ?",
+              values: [assignmentId],
+            });
+            queries.push({
+              sql: "DELETE FROM teacher_assignments WHERE assignment_id = ?",
+              values: [assignmentId],
+            });
+
+            const runQuery = (index) => {
+              if (index >= queries.length) {
+                return res.json({
+                  message: keepAssignmentId
+                    ? "Duplicate assignment merged and deleted successfully"
+                    : "Assignment deleted successfully",
+                });
+              }
+
+              db.query(
+                queries[index].sql,
+                queries[index].values,
+                (err, result) => {
+                  if (err) return res.status(500).json(err);
+
+                  if (
+                    queries[index].sql.startsWith(
+                      "DELETE FROM teacher_assignments"
+                    ) &&
+                    result.affectedRows === 0
+                  ) {
+                    return res
+                      .status(404)
+                      .json({ message: "Assignment not found" });
+                  }
+
+                  runQuery(index + 1);
+                }
+              );
+            };
+
+            runQuery(0);
           }
         );
       }

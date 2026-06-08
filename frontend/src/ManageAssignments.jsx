@@ -125,7 +125,11 @@ function ManageAssignments() {
       alert(res.data.message);
       loadData();
     } catch (err) {
-      alert(err.response?.data?.message || "Error deleting assignment");
+      alert(
+        err.response?.data?.message ||
+          err.response?.data?.sqlMessage ||
+          "Error deleting assignment"
+      );
       console.log(err);
     }
   };
