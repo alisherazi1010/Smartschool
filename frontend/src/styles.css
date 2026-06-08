@@ -1924,6 +1924,99 @@ th {
 
 
 
+/* timetable generator */
+
+.timetable-settings-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.timetable-table {
+  min-width: 1120px;
+}
+
+.timetable-table th {
+  vertical-align: top;
+}
+
+.timetable-table td {
+  vertical-align: top;
+  background: rgba(248, 250, 252, 0.58);
+}
+
+.timetable-cell {
+  display: grid;
+  gap: 8px;
+  min-width: 150px;
+}
+
+.timetable-chip {
+  display: grid;
+  gap: 3px;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(203, 213, 225, 0.82);
+  background: rgba(255, 255, 255, 0.68);
+  color: #334155;
+  box-shadow:
+    0 10px 22px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.timetable-chip strong {
+  color: #1e293b;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.timetable-chip span {
+  color: #1e3a5f;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.timetable-chip small {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.unplaced-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.unplaced-list span {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(254, 226, 226, 0.86);
+  color: #991b1b;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+@media (max-width: 768px) {
+  .timetable-settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .timetable-table {
+    min-width: 880px;
+  }
+
+  .timetable-cell {
+    min-width: 118px;
+  }
+
+  .timetable-chip {
+    padding: 8px;
+    border-radius: 10px;
+  }
+}
+
+
+
+
 /*teacherclasses*/
 /* teacher classes */
 

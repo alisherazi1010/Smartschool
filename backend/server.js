@@ -480,6 +480,235 @@ app.put("/teacher-assignments/:id", (req, res) => {
   );
 });
 
+const ensureTimetableTable = (callback) => {
+  const query = `
+    CREATE TABLE IF NOT EXISTS timetable_slots (
+      timetable_id INT AUTO_INCREMENT PRIMARY KEY,
+      assignment_id INT NOT NULL,
+      day_name VARCHAR(20) NOT NULL,
+      period_number INT NOT NULL,
+      start_time TIME NULL,
+      end_time TIME NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (assignment_id) REFERENCES teacher_assignments(assignment_id)
+    )
+  `;
+
+  db.query(query, callback);
+};
+
+const addMinutesToTime = (time, minutesToAdd) => {
+  const [hours, minutes] = time.split(":").map(Number);
+  const date = new Date(2000, 0, 1, hours, minutes);
+  date.setMinutes(date.getMinutes() + minutesToAdd);
+
+  return `${String(date.getHours()).padStart(2, "0")}:${String(
+    date.getMinutes()
+  ).padStart(2, "0")}:00`;
+};
+
+app.get("/timetable", (req, res) => {
+  ensureTimetableTable((tableErr) => {
+    if (tableErr) return res.status(500).json(tableErr);
+
+    const query = `
+      SELECT
+        timetable_slots.timetable_id,
+        timetable_slots.assignment_id,
+        timetable_slots.day_name,
+        timetable_slots.period_number,
+        timetable_slots.start_time,
+        timetable_slots.end_time,
+        teacher_assignments.teacher_id,
+        teacher_assignments.class_id,
+        teacher_assignments.section_id,
+        teacher_assignments.subject_id,
+        users.name AS teacher_name,
+        classes.class_name,
+        sections.section_name,
+        subjects.subject_name
+      FROM timetable_slots
+      JOIN teacher_assignments
+        ON timetable_slots.assignment_id = teacher_assignments.assignment_id
+      JOIN teachers
+        ON teacher_assignments.teacher_id = teachers.teacher_id
+      JOIN users
+        ON teachers.user_id = users.user_id
+      JOIN classes
+        ON teacher_assignments.class_id = classes.class_id
+      JOIN sections
+        ON teacher_assignments.section_id = sections.section_id
+      JOIN subjects
+        ON teacher_assignments.subject_id = subjects.subject_id
+      ORDER BY
+        FIELD(timetable_slots.day_name, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'),
+        timetable_slots.period_number,
+        classes.class_id,
+        sections.section_id
+    `;
+
+    db.query(query, (err, result) => {
+      if (err) return res.status(500).json(err);
+      res.json(result);
+    });
+  });
+});
+
+app.post("/timetable/generate", (req, res) => {
+  const {
+    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    periods_per_day = 6,
+    start_time = "08:00",
+    period_minutes = 40,
+    periods_per_assignment = 3,
+  } = req.body;
+
+  const assignmentQuery = `
+    SELECT
+      teacher_assignments.assignment_id,
+      teacher_assignments.teacher_id,
+      teacher_assignments.class_id,
+      teacher_assignments.section_id,
+      teacher_assignments.subject_id,
+      users.name AS teacher_name,
+      classes.class_name,
+      sections.section_name,
+      subjects.subject_name
+    FROM teacher_assignments
+    JOIN teachers ON teacher_assignments.teacher_id = teachers.teacher_id
+    JOIN users ON teachers.user_id = users.user_id
+    JOIN classes ON teacher_assignments.class_id = classes.class_id
+    JOIN sections ON teacher_assignments.section_id = sections.section_id
+    JOIN subjects ON teacher_assignments.subject_id = subjects.subject_id
+    ORDER BY classes.class_id, sections.section_id, subjects.subject_name
+  `;
+
+  ensureTimetableTable((tableErr) => {
+    if (tableErr) return res.status(500).json(tableErr);
+
+    db.query(assignmentQuery, (assignmentErr, assignments) => {
+      if (assignmentErr) return res.status(500).json(assignmentErr);
+
+      if (assignments.length === 0) {
+        return res.status(400).json({
+          message: "No teacher assignments found",
+        });
+      }
+
+      const slots = [];
+      days.forEach((day) => {
+        for (let period = 1; period <= Number(periods_per_day); period += 1) {
+          const offset = (period - 1) * Number(period_minutes);
+          slots.push({
+            day_name: day,
+            period_number: period,
+            start_time: addMinutesToTime(start_time, offset),
+            end_time: addMinutesToTime(start_time, offset + Number(period_minutes)),
+          });
+        }
+      });
+
+      const teacherBusy = new Set();
+      const classBusy = new Set();
+      const generated = [];
+      const unplaced = [];
+
+      const requests = assignments.flatMap((assignment) =>
+        Array.from({ length: Number(periods_per_assignment) }, () => assignment)
+      );
+
+      requests.forEach((assignment) => {
+        const placedCountForAssignment = generated.filter(
+          (slot) => slot.assignment_id === assignment.assignment_id
+        ).length;
+
+        const preferredSlots = slots
+          .map((slot, index) => ({ ...slot, index }))
+          .sort((a, b) => {
+            const aSameSubjectDay = generated.some(
+              (item) =>
+                item.assignment_id === assignment.assignment_id &&
+                item.day_name === a.day_name
+            );
+            const bSameSubjectDay = generated.some(
+              (item) =>
+                item.assignment_id === assignment.assignment_id &&
+                item.day_name === b.day_name
+            );
+
+            if (aSameSubjectDay !== bSameSubjectDay) {
+              return aSameSubjectDay ? 1 : -1;
+            }
+
+            return (a.index + placedCountForAssignment) - b.index;
+          });
+
+        const availableSlot = preferredSlots.find((slot) => {
+          const teacherKey = `${slot.day_name}-${slot.period_number}-teacher-${assignment.teacher_id}`;
+          const classKey = `${slot.day_name}-${slot.period_number}-class-${assignment.class_id}-${assignment.section_id}`;
+
+          return !teacherBusy.has(teacherKey) && !classBusy.has(classKey);
+        });
+
+        if (!availableSlot) {
+          unplaced.push(assignment);
+          return;
+        }
+
+        teacherBusy.add(
+          `${availableSlot.day_name}-${availableSlot.period_number}-teacher-${assignment.teacher_id}`
+        );
+        classBusy.add(
+          `${availableSlot.day_name}-${availableSlot.period_number}-class-${assignment.class_id}-${assignment.section_id}`
+        );
+
+        generated.push({
+          ...assignment,
+          day_name: availableSlot.day_name,
+          period_number: availableSlot.period_number,
+          start_time: availableSlot.start_time,
+          end_time: availableSlot.end_time,
+        });
+      });
+
+      db.query("DELETE FROM timetable_slots", (deleteErr) => {
+        if (deleteErr) return res.status(500).json(deleteErr);
+
+        if (generated.length === 0) {
+          return res.status(400).json({
+            message: "Could not place any timetable slots",
+            unplaced,
+          });
+        }
+
+        const values = generated.map((slot) => [
+          slot.assignment_id,
+          slot.day_name,
+          slot.period_number,
+          slot.start_time,
+          slot.end_time,
+        ]);
+
+        db.query(
+          `INSERT INTO timetable_slots
+           (assignment_id, day_name, period_number, start_time, end_time)
+           VALUES ?`,
+          [values],
+          (insertErr) => {
+            if (insertErr) return res.status(500).json(insertErr);
+
+            res.json({
+              message: "Timetable generated successfully",
+              generated,
+              unplaced,
+            });
+          }
+        );
+      });
+    });
+  });
+});
+
 
 
 

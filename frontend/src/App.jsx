@@ -30,6 +30,7 @@ import StudentResults from "./StudentResults";
 import StudentReportCard from "./StudentReportCard";
 import AdminStudentProfile from "./AdminStudentProfile";
 import EditAssessment from "./EditAssessment";
+import TimetableGenerator from "./TimetableGenerator";
 import "./styles.css";
 
 function App() {
@@ -66,6 +67,7 @@ function App() {
         <Route path="/student-report-card" element={<StudentReportCard />} />
         <Route path="/admin-student-profile" element={<AdminStudentProfile />} />
         <Route path="/edit-assessment" element={<EditAssessment />} />
+        <Route path="/timetable-generator" element={<TimetableGenerator />} />
       </Routes>
     </HashRouter>
   );

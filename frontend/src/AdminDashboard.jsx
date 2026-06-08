@@ -45,6 +45,7 @@ function AdminDashboard() {
         <button onClick={() => goTo("/view-teachers")}>Teachers</button>
         <button onClick={() => goTo("/view-subjects")}>Subjects</button>
         <button onClick={() => goTo("/view-assignments")}>Assignments</button>
+        <button onClick={() => goTo("/timetable-generator")}>Timetable</button>
 
         <button
           className="logout-btn"
@@ -117,6 +118,10 @@ function AdminDashboard() {
           <button onClick={() => navigate("/manage-assignments")}>
             <span className="admin-action-icon">ED</span>
             <span>Manage Assignments</span>
+          </button>
+          <button onClick={() => navigate("/timetable-generator")}>
+            <span className="admin-action-icon">TT</span>
+            <span>Timetable Generator</span>
           </button>
         </div>
       </main>
