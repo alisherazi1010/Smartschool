@@ -2015,10 +2015,37 @@ th {
 
 .timetable-table {
   min-width: 1120px;
+  table-layout: fixed;
+  border-spacing: 0 8px;
+  white-space: normal;
 }
 
 .timetable-table th {
   vertical-align: top;
+}
+
+.timetable-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.timetable-table th span,
+.timetable-table th small {
+  display: block;
+}
+
+.timetable-table th small {
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.timetable-table tbody th {
+  width: 110px;
+  color: white;
+  font-weight: 900;
 }
 
 .timetable-table td {
@@ -2030,6 +2057,8 @@ th {
   display: grid;
   gap: 8px;
   min-width: 150px;
+  min-height: 62px;
+  align-content: start;
 }
 
 .timetable-chip {
@@ -2063,6 +2092,18 @@ th {
   font-weight: 700;
 }
 
+.timetable-free-slot {
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px dashed rgba(148, 163, 184, 0.76);
+  background: rgba(255, 255, 255, 0.34);
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 800;
+}
+
 .unplaced-list {
   display: flex;
   flex-wrap: wrap;
@@ -2090,14 +2131,21 @@ th {
 
   .timetable-table {
     min-width: 880px;
+    display: table;
   }
 
   .timetable-cell {
     min-width: 118px;
+    min-height: 52px;
   }
 
   .timetable-chip {
     padding: 8px;
+    border-radius: 10px;
+  }
+
+  .timetable-free-slot {
+    min-height: 38px;
     border-radius: 10px;
   }
 }

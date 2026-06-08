@@ -168,10 +168,28 @@ function TimetableGenerator() {
     );
   };
 
+  const timetablePeriodCount = Math.max(
+    Number(settings.periods_per_day),
+    ...timetable.map((item) => Number(item.period_number) || 0)
+  );
+
   const periods = Array.from(
-    { length: Number(settings.periods_per_day) },
+    { length: timetablePeriodCount },
     (_, index) => index + 1
   );
+
+  const getPeriodTime = (period) => {
+    const matchingSlot = timetable.find(
+      (item) => Number(item.period_number) === Number(period)
+    );
+
+    if (!matchingSlot?.start_time || !matchingSlot?.end_time) return "";
+
+    return `${matchingSlot.start_time.slice(0, 5)} - ${matchingSlot.end_time.slice(
+      0,
+      5
+    )}`;
+  };
 
   const timetableClassSections = timetable
     .reduce((groups, item) => {
@@ -390,7 +408,10 @@ function TimetableGenerator() {
                         <tr>
                           <th>Day</th>
                           {periods.map((period) => (
-                            <th key={period}>Period {period}</th>
+                            <th key={period}>
+                              <span>Period {period}</span>
+                              <small>{getPeriodTime(period)}</small>
+                            </th>
                           ))}
                         </tr>
                       </thead>
@@ -402,19 +423,22 @@ function TimetableGenerator() {
                             {periods.map((period) => (
                               <td key={`${classSection.key}-${day}-${period}`}>
                                 <div className="timetable-cell">
-                                  {getSlot(day, period, classSection).map((slot) => (
-                                    <div
-                                      className="timetable-chip"
-                                      key={`${slot.assignment_id}-${slot.day_name}-${slot.period_number}`}
-                                    >
-                                      <span>{slot.subject_name}</span>
-                                      <small>{slot.teacher_name}</small>
-                                      <small>
-                                        {slot.start_time?.slice(0, 5)} -{" "}
-                                        {slot.end_time?.slice(0, 5)}
-                                      </small>
-                                    </div>
-                                  ))}
+                                  {getSlot(day, period, classSection).length ===
+                                  0 ? (
+                                    <span className="timetable-free-slot">
+                                      Free
+                                    </span>
+                                  ) : (
+                                    getSlot(day, period, classSection).map((slot) => (
+                                      <div
+                                        className="timetable-chip"
+                                        key={`${slot.assignment_id}-${slot.day_name}-${slot.period_number}`}
+                                      >
+                                        <span>{slot.subject_name}</span>
+                                        <small>{slot.teacher_name}</small>
+                                      </div>
+                                    ))
+                                  )}
                                 </div>
                               </td>
                             ))}
