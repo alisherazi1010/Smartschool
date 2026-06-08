@@ -558,8 +558,21 @@ app.delete("/teacher-assignments/:id", (req, res) => {
 
             if (keepAssignmentId) {
               queries.push({
-                sql: "UPDATE attendance SET assignment_id = ? WHERE assignment_id = ?",
-                values: [keepAssignmentId, assignmentId],
+                sql: `
+                  UPDATE attendance old_attendance
+                  LEFT JOIN attendance existing_attendance
+                    ON existing_attendance.student_id = old_attendance.student_id
+                    AND existing_attendance.attendance_date = old_attendance.attendance_date
+                    AND existing_attendance.assignment_id = ?
+                  SET old_attendance.assignment_id = ?
+                  WHERE old_attendance.assignment_id = ?
+                    AND existing_attendance.attendance_id IS NULL
+                `,
+                values: [keepAssignmentId, keepAssignmentId, assignmentId],
+              });
+              queries.push({
+                sql: "DELETE FROM attendance WHERE assignment_id = ?",
+                values: [assignmentId],
               });
               queries.push({
                 sql: "UPDATE assessments SET assignment_id = ? WHERE assignment_id = ?",
