@@ -472,28 +472,77 @@ app.put("/teacher-assignments/:id", (req, res) => {
   const assignmentId = req.params.id;
   const { teacher_id, class_id, section_id, subject_id } = req.body;
 
-  const query = `
-    UPDATE teacher_assignments
-    SET teacher_id = ?,
-        class_id = ?,
-        section_id = ?,
-        subject_id = ?
-    WHERE assignment_id = ?
-  `;
-
   db.query(
-    query,
-    [teacher_id, class_id, section_id, subject_id, assignmentId],
+    `SELECT assignment_id
+     FROM teacher_assignments
+     WHERE class_id = ?
+       AND section_id = ?
+       AND subject_id = ?
+       AND assignment_id <> ?`,
+    [class_id, section_id, subject_id, assignmentId],
     (err, result) => {
       if (err) return res.status(500).json(err);
 
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: "Assignment not found" });
+      if (result.length > 0) {
+        return res.status(409).json({
+          message: "This subject is already assigned for the selected class and section",
+        });
       }
 
-      res.json({ message: "Assignment updated successfully" });
+      const query = `
+        UPDATE teacher_assignments
+        SET teacher_id = ?,
+            class_id = ?,
+            section_id = ?,
+            subject_id = ?
+        WHERE assignment_id = ?
+      `;
+
+      db.query(
+        query,
+        [teacher_id, class_id, section_id, subject_id, assignmentId],
+        (err, updateResult) => {
+          if (err) return res.status(500).json(err);
+
+          if (updateResult.affectedRows === 0) {
+            return res.status(404).json({ message: "Assignment not found" });
+          }
+
+          res.json({ message: "Assignment updated successfully" });
+        }
+      );
     }
   );
+});
+
+app.delete("/teacher-assignments/:id", (req, res) => {
+  const assignmentId = req.params.id;
+
+  ensureTimetableTable((tableErr) => {
+    if (tableErr) return res.status(500).json(tableErr);
+
+    db.query(
+      "DELETE FROM timetable_slots WHERE assignment_id = ?",
+      [assignmentId],
+      (slotErr) => {
+        if (slotErr) return res.status(500).json(slotErr);
+
+        db.query(
+          "DELETE FROM teacher_assignments WHERE assignment_id = ?",
+          [assignmentId],
+          (err, result) => {
+            if (err) return res.status(500).json(err);
+
+            if (result.affectedRows === 0) {
+              return res.status(404).json({ message: "Assignment not found" });
+            }
+
+            res.json({ message: "Assignment deleted successfully" });
+          }
+        );
+      }
+    );
+  });
 });
 
 const ensureTimetableTable = (callback) => {
@@ -626,79 +675,145 @@ app.post("/timetable/generate", (req, res) => {
         });
       }
 
-      const slots = [];
-      days.forEach((day) => {
-        for (let period = 1; period <= Number(periods_per_day); period += 1) {
-          const offset = (period - 1) * Number(period_minutes);
-          slots.push({
-            day_name: day,
+      const periodSlots = Array.from(
+        { length: Number(periods_per_day) },
+        (_, index) => {
+          const period = index + 1;
+          const offset = index * Number(period_minutes);
+
+          return {
             period_number: period,
             start_time: addMinutesToTime(start_time, offset),
-            end_time: addMinutesToTime(start_time, offset + Number(period_minutes)),
-          });
+            end_time: addMinutesToTime(
+              start_time,
+              offset + Number(period_minutes)
+            ),
+          };
         }
-      });
-
-      const teacherBusy = new Set();
-      const classBusy = new Set();
-      const generated = [];
-      const unplaced = [];
-
-      const requests = assignments.flatMap((assignment) =>
-        days.map((day) => ({
-          ...assignment,
-          requested_day: day,
-        }))
       );
 
-      requests.forEach((assignment) => {
-        const preferredSlots = slots
-          .filter((slot) => slot.day_name === assignment.requested_day)
-          .map((slot, index) => ({ ...slot, index }))
-          .sort((a, b) => {
-            const aLoad = generated.filter(
-              (item) =>
-                item.day_name === a.day_name &&
-                Number(item.period_number) === Number(a.period_number)
-            ).length;
-            const bLoad = generated.filter(
-              (item) =>
-                item.day_name === b.day_name &&
-                Number(item.period_number) === Number(b.period_number)
-            ).length;
+      const generated = [];
+      const unplaced = [];
+      const classSubjectCount = assignments.reduce((counts, assignment) => {
+        const key = `${assignment.class_id}-${assignment.section_id}`;
+        counts[key] = (counts[key] || 0) + 1;
+        return counts;
+      }, {});
 
-            if (aLoad !== bLoad) return aLoad - bLoad;
+      const overloadedClasses = Object.entries(classSubjectCount)
+        .filter(([, count]) => count > Number(periods_per_day))
+        .map(([key]) => {
+          const [classId, sectionId] = key.split("-");
+          const assignment = assignments.find(
+            (item) =>
+              String(item.class_id) === classId &&
+              String(item.section_id) === sectionId
+          );
 
-            return a.index - b.index;
-          });
-
-        const availableSlot = preferredSlots.find((slot) => {
-          const teacherKey = `${slot.day_name}-${slot.period_number}-teacher-${assignment.teacher_id}`;
-          const classKey = `${slot.day_name}-${slot.period_number}-class-${assignment.class_id}-${assignment.section_id}`;
-
-          return !teacherBusy.has(teacherKey) && !classBusy.has(classKey);
+          return {
+            class_name: assignment?.class_name || `Class ${classId}`,
+            section_name: assignment?.section_name || sectionId,
+          };
         });
 
-        if (!availableSlot) {
-          unplaced.push(assignment);
+      if (overloadedClasses.length > 0) {
+        return res.status(400).json({
+          message:
+            "Some class-sections have more assigned subjects than periods per day",
+          unplaced: overloadedClasses,
+        });
+      }
+
+      const scheduleDay = (day) => {
+        const placements = [];
+        const unscheduled = assignments.map((assignment) => ({
+          ...assignment,
+          requested_day: day,
+        }));
+
+        const getPossibleSlots = (assignment) => {
+          return periodSlots.filter((slot) => {
+            const teacherTaken = placements.some(
+              (item) =>
+                Number(item.period_number) === Number(slot.period_number) &&
+                String(item.teacher_id) === String(assignment.teacher_id)
+            );
+            const classTaken = placements.some(
+              (item) =>
+                Number(item.period_number) === Number(slot.period_number) &&
+                String(item.class_id) === String(assignment.class_id) &&
+                String(item.section_id) === String(assignment.section_id)
+            );
+
+            return !teacherTaken && !classTaken;
+          });
+        };
+
+        const placeNext = () => {
+          if (unscheduled.length === 0) return true;
+
+          let bestIndex = -1;
+          let bestSlots = [];
+
+          for (let index = 0; index < unscheduled.length; index += 1) {
+            const possibleSlots = getPossibleSlots(unscheduled[index]);
+
+            if (bestIndex === -1 || possibleSlots.length < bestSlots.length) {
+              bestIndex = index;
+              bestSlots = possibleSlots;
+            }
+
+            if (possibleSlots.length === 0) break;
+          }
+
+          if (bestSlots.length === 0) return false;
+
+          const [assignment] = unscheduled.splice(bestIndex, 1);
+
+          for (const slot of bestSlots) {
+            placements.push({
+              ...assignment,
+              day_name: day,
+              period_number: slot.period_number,
+              start_time: slot.start_time,
+              end_time: slot.end_time,
+            });
+
+            if (placeNext()) return true;
+
+            placements.pop();
+          }
+
+          unscheduled.splice(bestIndex, 0, assignment);
+          return false;
+        };
+
+        return placeNext() ? placements : null;
+      };
+
+      days.forEach((day) => {
+        const dayPlacements = scheduleDay(day);
+
+        if (dayPlacements) {
+          generated.push(...dayPlacements);
           return;
         }
 
-        teacherBusy.add(
-          `${availableSlot.day_name}-${availableSlot.period_number}-teacher-${assignment.teacher_id}`
-        );
-        classBusy.add(
-          `${availableSlot.day_name}-${availableSlot.period_number}-class-${assignment.class_id}-${assignment.section_id}`
-        );
-
-        generated.push({
-          ...assignment,
-          day_name: availableSlot.day_name,
-          period_number: availableSlot.period_number,
-          start_time: availableSlot.start_time,
-          end_time: availableSlot.end_time,
+        assignments.forEach((assignment) => {
+          unplaced.push({
+            ...assignment,
+            requested_day: day,
+          });
         });
       });
+
+      if (unplaced.length > 0) {
+        return res.status(400).json({
+          message:
+            "Could not create a full clash-free timetable with the selected periods",
+          unplaced,
+        });
+      }
 
       db.query("DELETE FROM timetable_slots", (deleteErr) => {
         if (deleteErr) return res.status(500).json(deleteErr);

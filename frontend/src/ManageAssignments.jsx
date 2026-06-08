@@ -76,6 +76,18 @@ function ManageAssignments() {
     );
   };
 
+  const getAssignmentKey = (assignment) =>
+    `${assignment.class_id}-${assignment.section_id}-${assignment.subject_id}`;
+
+  const duplicateKeys = assignments.reduce((keys, assignment) => {
+    const key = getAssignmentKey(assignment);
+    keys[key] = (keys[key] || 0) + 1;
+    return keys;
+  }, {});
+
+  const isDuplicateAssignment = (assignment) =>
+    duplicateKeys[getAssignmentKey(assignment)] > 1;
+
   const handleSave = async (assignment) => {
     setSavingId(assignment.assignment_id);
 
@@ -93,10 +105,28 @@ function ManageAssignments() {
       alert(res.data.message);
       loadData();
     } catch (err) {
-      alert("Error updating assignment");
+      alert(err.response?.data?.message || "Error updating assignment");
       console.log(err);
     } finally {
       setSavingId(null);
+    }
+  };
+
+  const handleDelete = async (assignmentId) => {
+    const confirmed = window.confirm("Delete this assignment?");
+
+    if (!confirmed) return;
+
+    try {
+      const res = await axios.delete(
+        `${import.meta.env.VITE_API_URL}/teacher-assignments/${assignmentId}`
+      );
+
+      alert(res.data.message);
+      loadData();
+    } catch (err) {
+      alert(err.response?.data?.message || "Error deleting assignment");
+      console.log(err);
     }
   };
 
@@ -145,6 +175,13 @@ function ManageAssignments() {
         </section>
 
         <section className="admin-table-panel">
+          {assignments.some(isDuplicateAssignment) && (
+            <div className="duplicate-warning">
+              Duplicate assignments found. Keep only one teacher for each class,
+              section, and subject.
+            </div>
+          )}
+
           <div className="admin-table-wrap">
             <table className="admin-table manage-assignment-table">
               <thead>
@@ -160,8 +197,18 @@ function ManageAssignments() {
 
               <tbody>
                 {assignments.map((assignment) => (
-                  <tr key={assignment.assignment_id}>
-                    <td>{assignment.assignment_id}</td>
+                  <tr
+                    className={
+                      isDuplicateAssignment(assignment) ? "duplicate-row" : ""
+                    }
+                    key={assignment.assignment_id}
+                  >
+                    <td>
+                      {assignment.assignment_id}
+                      {isDuplicateAssignment(assignment) && (
+                        <span className="duplicate-tag">Duplicate</span>
+                      )}
+                    </td>
                     <td>
                       <select
                         className="assignment-select"
@@ -253,6 +300,12 @@ function ManageAssignments() {
                           {savingId === assignment.assignment_id
                             ? "Saving"
                             : "Save"}
+                        </button>
+                        <button
+                          className="danger-table-btn"
+                          onClick={() => handleDelete(assignment.assignment_id)}
+                        >
+                          Delete
                         </button>
                       </div>
                     </td>

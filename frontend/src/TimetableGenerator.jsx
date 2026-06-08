@@ -147,6 +147,7 @@ function TimetableGenerator() {
       setTimetable(res.data.generated || []);
       setUnplaced(res.data.unplaced || []);
     } catch (err) {
+      setUnplaced(err.response?.data?.unplaced || []);
       alert(
         err.response?.data?.message ||
           err.response?.data?.sqlMessage ||
@@ -372,8 +373,9 @@ function TimetableGenerator() {
             <div className="unplaced-list">
               {unplaced.map((item, index) => (
                 <span key={`${item.assignment_id}-${index}`}>
-                  {item.requested_day}: {item.class_name} {item.section_name} -{" "}
-                  {item.subject_name}
+                  {item.requested_day ? `${item.requested_day}: ` : ""}
+                  {item.class_name} {item.section_name}
+                  {item.subject_name ? ` - ${item.subject_name}` : ""}
                 </span>
               ))}
             </div>
