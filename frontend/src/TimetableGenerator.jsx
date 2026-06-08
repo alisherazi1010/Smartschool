@@ -14,7 +14,6 @@ function TimetableGenerator() {
     periods_per_day: 6,
     start_time: "08:00",
     period_minutes: 40,
-    periods_per_assignment: 3,
   });
 
   useEffect(() => {
@@ -60,7 +59,6 @@ function TimetableGenerator() {
           days: defaultDays,
           periods_per_day: Number(settings.periods_per_day),
           period_minutes: Number(settings.period_minutes),
-          periods_per_assignment: Number(settings.periods_per_assignment),
         }
       );
 
@@ -122,7 +120,7 @@ function TimetableGenerator() {
         <section className="admin-hero">
           <div>
             <h1>Timetable Generator</h1>
-            <p>Create a clash-free timetable from teacher assignments.</p>
+            <p>Give every subject one class per day without timetable clashes.</p>
           </div>
           <div className="hero-actions">
             <span className="admin-hero-badge">{timetable.length} slots</span>
@@ -134,7 +132,7 @@ function TimetableGenerator() {
           <div className="admin-section-header">
             <h2>Generator Settings</h2>
             <p>
-              The generator prevents teacher clashes and class-section clashes.
+              Each assigned subject gets one class from Monday to Friday.
             </p>
           </div>
 
@@ -171,16 +169,6 @@ function TimetableGenerator() {
               />
             </label>
 
-            <label>
-              Weekly Periods Per Assignment
-              <input
-                name="periods_per_assignment"
-                type="number"
-                min="1"
-                value={settings.periods_per_assignment}
-                onChange={handleSettingChange}
-              />
-            </label>
           </div>
 
           <div className="form-actions">
@@ -198,15 +186,16 @@ function TimetableGenerator() {
             <div className="admin-section-header">
               <h2>Unplaced Assignments</h2>
               <p>
-                These could not fit without clashes. Add more periods or reduce
-                weekly periods per assignment.
+                These could not fit without clashes. Add more periods per day
+                or adjust teacher assignments.
               </p>
             </div>
 
             <div className="unplaced-list">
               {unplaced.map((item, index) => (
                 <span key={`${item.assignment_id}-${index}`}>
-                  {item.class_name} {item.section_name} - {item.subject_name}
+                  {item.requested_day}: {item.class_name} {item.section_name} -{" "}
+                  {item.subject_name}
                 </span>
               ))}
             </div>
@@ -216,7 +205,10 @@ function TimetableGenerator() {
         <section className="admin-table-panel">
           <div className="admin-section-header">
             <h2>Generated Timetable</h2>
-            <p>Each cell can contain multiple classes, but no teacher or class-section clashes.</p>
+            <p>
+              Each subject appears once per day, with no teacher or
+              class-section clashes.
+            </p>
           </div>
 
           {timetable.length === 0 ? (

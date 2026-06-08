@@ -560,7 +560,6 @@ app.post("/timetable/generate", (req, res) => {
     periods_per_day = 6,
     start_time = "08:00",
     period_minutes = 40,
-    periods_per_assignment = 3,
   } = req.body;
 
   const assignmentQuery = `
@@ -614,33 +613,31 @@ app.post("/timetable/generate", (req, res) => {
       const unplaced = [];
 
       const requests = assignments.flatMap((assignment) =>
-        Array.from({ length: Number(periods_per_assignment) }, () => assignment)
+        days.map((day) => ({
+          ...assignment,
+          requested_day: day,
+        }))
       );
 
       requests.forEach((assignment) => {
-        const placedCountForAssignment = generated.filter(
-          (slot) => slot.assignment_id === assignment.assignment_id
-        ).length;
-
         const preferredSlots = slots
+          .filter((slot) => slot.day_name === assignment.requested_day)
           .map((slot, index) => ({ ...slot, index }))
           .sort((a, b) => {
-            const aSameSubjectDay = generated.some(
+            const aLoad = generated.filter(
               (item) =>
-                item.assignment_id === assignment.assignment_id &&
-                item.day_name === a.day_name
-            );
-            const bSameSubjectDay = generated.some(
+                item.day_name === a.day_name &&
+                Number(item.period_number) === Number(a.period_number)
+            ).length;
+            const bLoad = generated.filter(
               (item) =>
-                item.assignment_id === assignment.assignment_id &&
-                item.day_name === b.day_name
-            );
+                item.day_name === b.day_name &&
+                Number(item.period_number) === Number(b.period_number)
+            ).length;
 
-            if (aSameSubjectDay !== bSameSubjectDay) {
-              return aSameSubjectDay ? 1 : -1;
-            }
+            if (aLoad !== bLoad) return aLoad - bLoad;
 
-            return (a.index + placedCountForAssignment) - b.index;
+            return a.index - b.index;
           });
 
         const availableSlot = preferredSlots.find((slot) => {
