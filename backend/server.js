@@ -413,14 +413,30 @@ app.post("/teacher-assignments", (req, res) => {
   const { teacher_id, class_id, section_id, subject_id } = req.body;
 
   db.query(
-    `INSERT INTO teacher_assignments 
-     (teacher_id, class_id, section_id, subject_id)
-     VALUES (?, ?, ?, ?)`,
-    [teacher_id, class_id, section_id, subject_id],
-    (err) => {
+    `SELECT assignment_id
+     FROM teacher_assignments
+     WHERE class_id = ? AND section_id = ? AND subject_id = ?`,
+    [class_id, section_id, subject_id],
+    (err, result) => {
       if (err) return res.status(500).json(err);
 
-      res.json({ message: "Teacher assigned successfully" });
+      if (result.length > 0) {
+        return res.status(409).json({
+          message: "This subject is already assigned for the selected class and section",
+        });
+      }
+
+      db.query(
+        `INSERT INTO teacher_assignments 
+         (teacher_id, class_id, section_id, subject_id)
+         VALUES (?, ?, ?, ?)`,
+        [teacher_id, class_id, section_id, subject_id],
+        (err) => {
+          if (err) return res.status(500).json(err);
+
+          res.json({ message: "Teacher assigned successfully" });
+        }
+      );
     }
   );
 });
@@ -560,7 +576,23 @@ app.post("/timetable/generate", (req, res) => {
     periods_per_day = 6,
     start_time = "08:00",
     period_minutes = 40,
+    selected_class_sections = [],
   } = req.body;
+
+  const selectedClassSections = Array.isArray(selected_class_sections)
+    ? selected_class_sections
+    : [];
+  const filterParts = [];
+  const filterValues = [];
+
+  selectedClassSections.forEach((item) => {
+    if (!item.class_id || !item.section_id) return;
+
+    filterParts.push(
+      "(teacher_assignments.class_id = ? AND teacher_assignments.section_id = ?)"
+    );
+    filterValues.push(item.class_id, item.section_id);
+  });
 
   const assignmentQuery = `
     SELECT
@@ -579,13 +611,14 @@ app.post("/timetable/generate", (req, res) => {
     JOIN classes ON teacher_assignments.class_id = classes.class_id
     JOIN sections ON teacher_assignments.section_id = sections.section_id
     JOIN subjects ON teacher_assignments.subject_id = subjects.subject_id
+    ${filterParts.length > 0 ? `WHERE ${filterParts.join(" OR ")}` : ""}
     ORDER BY classes.class_id, sections.section_id, subjects.subject_name
   `;
 
   ensureTimetableTable((tableErr) => {
     if (tableErr) return res.status(500).json(tableErr);
 
-    db.query(assignmentQuery, (assignmentErr, assignments) => {
+    db.query(assignmentQuery, filterValues, (assignmentErr, assignments) => {
       if (assignmentErr) return res.status(500).json(assignmentErr);
 
       if (assignments.length === 0) {

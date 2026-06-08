@@ -1927,7 +1927,90 @@ th {
 /* timetable generator */
 
 .timetable-settings-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.class-section-picker {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(203, 213, 225, 0.62);
+}
+
+.timetable-picker-actions {
+  margin-top: 0;
+  margin-bottom: 14px;
+}
+
+.class-section-grid {
+  display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.class-section-card {
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.46);
+  box-shadow:
+    0 12px 26px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.class-section-card strong {
+  display: block;
+  margin-bottom: 10px;
+  color: #1e293b;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.class-section-card div {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+}
+
+.class-section-card button {
+  min-height: 34px;
+  margin: 0;
+  padding: 7px 8px;
+  border-radius: 9px;
+  border: 1px solid rgba(203, 213, 225, 0.86);
+  background: rgba(255, 255, 255, 0.62);
+  color: #334155;
+  font-size: 13px;
+  font-weight: 900;
+  box-shadow: none;
+}
+
+.class-section-card button:hover,
+.class-section-card button.selected {
+  border-color: #1e3a5f;
+  background: #1e3a5f;
+  color: white;
+}
+
+.class-timetable-list {
+  display: grid;
+  gap: 22px;
+}
+
+.class-timetable-panel {
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 12px 28px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78);
+}
+
+.class-timetable-title h3 {
+  margin: 0 0 14px;
+  color: #1e293b;
+  font-size: 20px;
+  font-weight: 900;
 }
 
 .timetable-table {
@@ -2000,6 +2083,11 @@ th {
     grid-template-columns: 1fr;
   }
 
+  .class-section-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
   .timetable-table {
     min-width: 880px;
   }
@@ -2011,6 +2099,25 @@ th {
   .timetable-chip {
     padding: 8px;
     border-radius: 10px;
+  }
+}
+
+@media (max-width: 420px) {
+  .class-section-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .class-section-card {
+    padding: 12px;
+  }
+
+  .class-timetable-panel {
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .class-timetable-title h3 {
+    font-size: 17px;
   }
 }
 

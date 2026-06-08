@@ -2,9 +2,32 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const classOptions = [
+  { id: "1", name: "Nursery" },
+  { id: "2", name: "KG" },
+  { id: "3", name: "Prep" },
+  { id: "4", name: "Class 1" },
+  { id: "5", name: "Class 2" },
+  { id: "6", name: "Class 3" },
+  { id: "7", name: "Class 4" },
+  { id: "8", name: "Class 5" },
+  { id: "9", name: "Class 6" },
+  { id: "10", name: "Class 7" },
+  { id: "11", name: "Class 8" },
+  { id: "12", name: "Class 9" },
+  { id: "13", name: "Class 10" },
+];
+
+const sectionOptions = [
+  { id: "1", name: "A" },
+  { id: "2", name: "B" },
+  { id: "3", name: "C" },
+];
+
 function AssignTeacher() {
   const [teachers, setTeachers] = useState([]);
   const [subjects, setSubjects] = useState([]);
+  const [assignments, setAssignments] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -33,6 +56,11 @@ function AssignTeacher() {
       .get(`${import.meta.env.VITE_API_URL}/subjects`)
       .then((res) => setSubjects(res.data))
       .catch((err) => console.log(err));
+
+    axios
+      .get(`${import.meta.env.VITE_API_URL}/teacher-assignments`)
+      .then((res) => setAssignments(res.data))
+      .catch((err) => console.log(err));
   }, [navigate]);
 
   const goTo = (path) => {
@@ -41,11 +69,67 @@ function AssignTeacher() {
   };
 
   const handleChange = (e) => {
+    if (e.target.name === "class_id") {
+      setAssignment({
+        ...assignment,
+        class_id: e.target.value,
+        section_id: "",
+        subject_id: "",
+      });
+      return;
+    }
+
+    if (e.target.name === "section_id") {
+      setAssignment({
+        ...assignment,
+        section_id: e.target.value,
+        subject_id: "",
+      });
+      return;
+    }
+
     setAssignment({
       ...assignment,
       [e.target.name]: e.target.value,
     });
   };
+
+  const isSubjectAssigned = (classId, sectionId, subjectId) => {
+    return assignments.some(
+      (item) =>
+        String(item.class_id) === String(classId) &&
+        String(item.section_id) === String(sectionId) &&
+        String(item.subject_id) === String(subjectId)
+    );
+  };
+
+  const hasAvailableSubject = (classId, sectionId) => {
+    return subjects.some(
+      (subject) => !isSubjectAssigned(classId, sectionId, subject.subject_id)
+    );
+  };
+
+  const availableClasses = classOptions.filter((classItem) =>
+    sectionOptions.some((section) => hasAvailableSubject(classItem.id, section.id))
+  );
+
+  const availableSections = assignment.class_id
+    ? sectionOptions.filter((section) =>
+        hasAvailableSubject(assignment.class_id, section.id)
+      )
+    : [];
+
+  const availableSubjects =
+    assignment.class_id && assignment.section_id
+      ? subjects.filter(
+          (subject) =>
+            !isSubjectAssigned(
+              assignment.class_id,
+              assignment.section_id,
+              subject.subject_id
+            )
+        )
+      : [];
 
   const handleSubmit = async () => {
     if (
@@ -65,6 +149,15 @@ function AssignTeacher() {
       );
 
       alert(res.data.message);
+      setAssignments((current) => [
+        ...current,
+        {
+          teacher_id: assignment.teacher_id,
+          class_id: assignment.class_id,
+          section_id: assignment.section_id,
+          subject_id: assignment.subject_id,
+        },
+      ]);
       setAssignment({
         teacher_id: "",
         class_id: "",
@@ -72,7 +165,7 @@ function AssignTeacher() {
         subject_id: "",
       });
     } catch (err) {
-      alert("Error assigning teacher");
+      alert(err.response?.data?.message || "Error assigning teacher");
       console.log(err);
     }
   };
@@ -151,19 +244,11 @@ function AssignTeacher() {
                 onChange={handleChange}
               >
                 <option value="">Select Class</option>
-                <option value="1">Nursery</option>
-                <option value="2">KG</option>
-                <option value="3">Prep</option>
-                <option value="4">Class 1</option>
-                <option value="5">Class 2</option>
-                <option value="6">Class 3</option>
-                <option value="7">Class 4</option>
-                <option value="8">Class 5</option>
-                <option value="9">Class 6</option>
-                <option value="10">Class 7</option>
-                <option value="11">Class 8</option>
-                <option value="12">Class 9</option>
-                <option value="13">Class 10</option>
+                {availableClasses.map((classItem) => (
+                  <option key={classItem.id} value={classItem.id}>
+                    {classItem.name}
+                  </option>
+                ))}
               </select>
             </label>
 
@@ -173,11 +258,14 @@ function AssignTeacher() {
                 name="section_id"
                 value={assignment.section_id}
                 onChange={handleChange}
+                disabled={!assignment.class_id}
               >
                 <option value="">Select Section</option>
-                <option value="1">A</option>
-                <option value="2">B</option>
-                <option value="3">C</option>
+                {availableSections.map((section) => (
+                  <option key={section.id} value={section.id}>
+                    {section.name}
+                  </option>
+                ))}
               </select>
             </label>
 
@@ -187,9 +275,10 @@ function AssignTeacher() {
                 name="subject_id"
                 value={assignment.subject_id}
                 onChange={handleChange}
+                disabled={!assignment.class_id || !assignment.section_id}
               >
                 <option value="">Select Subject</option>
-                {subjects.map((s) => (
+                {availableSubjects.map((s) => (
                   <option key={s.subject_id} value={s.subject_id}>
                     {s.subject_name}
                   </option>
@@ -197,6 +286,12 @@ function AssignTeacher() {
               </select>
             </label>
           </div>
+
+          {availableClasses.length === 0 && (
+            <p className="empty-panel-text">
+              All class, section, and subject combinations are already assigned.
+            </p>
+          )}
 
           <div className="form-actions">
             <button onClick={handleSubmit}>Assign Teacher</button>

@@ -3,12 +3,33 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const defaultDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+const classOptions = [
+  { class_id: "1", class_name: "Nursery" },
+  { class_id: "2", class_name: "KG" },
+  { class_id: "3", class_name: "Prep" },
+  { class_id: "4", class_name: "Class 1" },
+  { class_id: "5", class_name: "Class 2" },
+  { class_id: "6", class_name: "Class 3" },
+  { class_id: "7", class_name: "Class 4" },
+  { class_id: "8", class_name: "Class 5" },
+  { class_id: "9", class_name: "Class 6" },
+  { class_id: "10", class_name: "Class 7" },
+  { class_id: "11", class_name: "Class 8" },
+  { class_id: "12", class_name: "Class 9" },
+  { class_id: "13", class_name: "Class 10" },
+];
+const sectionOptions = [
+  { section_id: "1", section_name: "A" },
+  { section_id: "2", section_name: "B" },
+  { section_id: "3", section_name: "C" },
+];
 
 function TimetableGenerator() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [timetable, setTimetable] = useState([]);
   const [unplaced, setUnplaced] = useState([]);
+  const [selectedClassSections, setSelectedClassSections] = useState([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [settings, setSettings] = useState({
     periods_per_day: 6,
@@ -40,6 +61,57 @@ function TimetableGenerator() {
     });
   };
 
+  const getClassSectionKey = (classId, sectionId) => `${classId}-${sectionId}`;
+
+  const isClassSectionSelected = (classId, sectionId) => {
+    return selectedClassSections.some(
+      (item) => item.class_id === classId && item.section_id === sectionId
+    );
+  };
+
+  const toggleClassSection = (classItem, sectionItem) => {
+    const isSelected = isClassSectionSelected(
+      classItem.class_id,
+      sectionItem.section_id
+    );
+
+    if (isSelected) {
+      setSelectedClassSections((current) =>
+        current.filter(
+          (item) =>
+            !(
+              item.class_id === classItem.class_id &&
+              item.section_id === sectionItem.section_id
+            )
+        )
+      );
+      return;
+    }
+
+    setSelectedClassSections((current) => [
+      ...current,
+      {
+        class_id: classItem.class_id,
+        class_name: classItem.class_name,
+        section_id: sectionItem.section_id,
+        section_name: sectionItem.section_name,
+      },
+    ]);
+  };
+
+  const selectAllClassSections = () => {
+    const allClassSections = classOptions.flatMap((classItem) =>
+      sectionOptions.map((sectionItem) => ({
+        class_id: classItem.class_id,
+        class_name: classItem.class_name,
+        section_id: sectionItem.section_id,
+        section_name: sectionItem.section_name,
+      }))
+    );
+
+    setSelectedClassSections(allClassSections);
+  };
+
   const loadTimetable = () => {
     axios
       .get(`${import.meta.env.VITE_API_URL}/timetable`)
@@ -48,6 +120,11 @@ function TimetableGenerator() {
   };
 
   const generateTimetable = async () => {
+    if (selectedClassSections.length === 0) {
+      alert("Please select at least one class and section");
+      return;
+    }
+
     setIsGenerating(true);
     setUnplaced([]);
 
@@ -59,6 +136,10 @@ function TimetableGenerator() {
           days: defaultDays,
           periods_per_day: Number(settings.periods_per_day),
           period_minutes: Number(settings.period_minutes),
+          selected_class_sections: selectedClassSections.map((item) => ({
+            class_id: item.class_id,
+            section_id: item.section_id,
+          })),
         }
       );
 
@@ -73,9 +154,13 @@ function TimetableGenerator() {
     }
   };
 
-  const getSlot = (day, period) => {
+  const getSlot = (day, period, classSection) => {
     return timetable.filter(
-      (item) => item.day_name === day && Number(item.period_number) === period
+      (item) =>
+        item.day_name === day &&
+        Number(item.period_number) === period &&
+        String(item.class_id) === String(classSection.class_id) &&
+        String(item.section_id) === String(classSection.section_id)
     );
   };
 
@@ -83,6 +168,30 @@ function TimetableGenerator() {
     { length: Number(settings.periods_per_day) },
     (_, index) => index + 1
   );
+
+  const timetableClassSections = timetable
+    .reduce((groups, item) => {
+      const key = getClassSectionKey(item.class_id, item.section_id);
+      if (groups.some((group) => group.key === key)) return groups;
+
+      return [
+        ...groups,
+        {
+          key,
+          class_id: item.class_id,
+          class_name: item.class_name,
+          section_id: item.section_id,
+          section_name: item.section_name,
+        },
+      ];
+    }, [])
+    .sort((a, b) => {
+      if (Number(a.class_id) !== Number(b.class_id)) {
+        return Number(a.class_id) - Number(b.class_id);
+      }
+
+      return Number(a.section_id) - Number(b.section_id);
+    });
 
   return (
     <div className="dashboard-layout">
@@ -120,7 +229,9 @@ function TimetableGenerator() {
         <section className="admin-hero">
           <div>
             <h1>Timetable Generator</h1>
-            <p>Give every subject one class per day without timetable clashes.</p>
+            <p>
+              Choose class-sections and give every subject one class per day.
+            </p>
           </div>
           <div className="hero-actions">
             <span className="admin-hero-badge">{timetable.length} slots</span>
@@ -171,6 +282,51 @@ function TimetableGenerator() {
 
           </div>
 
+          <div className="class-section-picker">
+            <div className="admin-section-header">
+              <h2>Classes And Sections</h2>
+              <p>Select the class-sections that need a timetable.</p>
+            </div>
+
+            <div className="form-actions timetable-picker-actions">
+              <button className="secondary-form-btn" onClick={selectAllClassSections}>
+                Select All
+              </button>
+              <button
+                className="secondary-form-btn"
+                onClick={() => setSelectedClassSections([])}
+              >
+                Clear
+              </button>
+            </div>
+
+            <div className="class-section-grid">
+              {classOptions.map((classItem) => (
+                <div className="class-section-card" key={classItem.class_id}>
+                  <strong>{classItem.class_name}</strong>
+                  <div>
+                    {sectionOptions.map((sectionItem) => {
+                      const selected = isClassSectionSelected(
+                        classItem.class_id,
+                        sectionItem.section_id
+                      );
+
+                      return (
+                        <button
+                          className={selected ? "selected" : ""}
+                          key={sectionItem.section_id}
+                          onClick={() => toggleClassSection(classItem, sectionItem)}
+                        >
+                          {sectionItem.section_name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div className="form-actions">
             <button onClick={generateTimetable} disabled={isGenerating}>
               {isGenerating ? "Generating" : "Generate Timetable"}
@@ -214,47 +370,57 @@ function TimetableGenerator() {
           {timetable.length === 0 ? (
             <p className="empty-panel-text">No timetable generated yet.</p>
           ) : (
-            <div className="admin-table-wrap">
-              <table className="admin-table timetable-table">
-                <thead>
-                  <tr>
-                    <th>Day</th>
-                    {periods.map((period) => (
-                      <th key={period}>Period {period}</th>
-                    ))}
-                  </tr>
-                </thead>
+            <div className="class-timetable-list">
+              {timetableClassSections.map((classSection) => (
+                <section className="class-timetable-panel" key={classSection.key}>
+                  <div className="class-timetable-title">
+                    <h3>
+                      {classSection.class_name} - Section{" "}
+                      {classSection.section_name}
+                    </h3>
+                  </div>
 
-                <tbody>
-                  {defaultDays.map((day) => (
-                    <tr key={day}>
-                      <th>{day}</th>
-                      {periods.map((period) => (
-                        <td key={`${day}-${period}`}>
-                          <div className="timetable-cell">
-                            {getSlot(day, period).map((slot) => (
-                              <div
-                                className="timetable-chip"
-                                key={`${slot.assignment_id}-${slot.day_name}-${slot.period_number}`}
-                              >
-                                <strong>
-                                  {slot.class_name} {slot.section_name}
-                                </strong>
-                                <span>{slot.subject_name}</span>
-                                <small>{slot.teacher_name}</small>
-                                <small>
-                                  {slot.start_time?.slice(0, 5)} -{" "}
-                                  {slot.end_time?.slice(0, 5)}
-                                </small>
-                              </div>
+                  <div className="admin-table-wrap">
+                    <table className="admin-table timetable-table">
+                      <thead>
+                        <tr>
+                          <th>Day</th>
+                          {periods.map((period) => (
+                            <th key={period}>Period {period}</th>
+                          ))}
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {defaultDays.map((day) => (
+                          <tr key={`${classSection.key}-${day}`}>
+                            <th>{day}</th>
+                            {periods.map((period) => (
+                              <td key={`${classSection.key}-${day}-${period}`}>
+                                <div className="timetable-cell">
+                                  {getSlot(day, period, classSection).map((slot) => (
+                                    <div
+                                      className="timetable-chip"
+                                      key={`${slot.assignment_id}-${slot.day_name}-${slot.period_number}`}
+                                    >
+                                      <span>{slot.subject_name}</span>
+                                      <small>{slot.teacher_name}</small>
+                                      <small>
+                                        {slot.start_time?.slice(0, 5)} -{" "}
+                                        {slot.end_time?.slice(0, 5)}
+                                      </small>
+                                    </div>
+                                  ))}
+                                </div>
+                              </td>
                             ))}
-                          </div>
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              ))}
             </div>
           )}
         </section>
