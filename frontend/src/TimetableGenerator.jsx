@@ -147,7 +147,11 @@ function TimetableGenerator() {
       setTimetable(res.data.generated || []);
       setUnplaced(res.data.unplaced || []);
     } catch (err) {
-      alert(err.response?.data?.message || "Error generating timetable");
+      alert(
+        err.response?.data?.message ||
+          err.response?.data?.sqlMessage ||
+          "Error generating timetable"
+      );
       console.log(err);
     } finally {
       setIsGenerating(false);

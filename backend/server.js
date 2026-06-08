@@ -505,8 +505,7 @@ const ensureTimetableTable = (callback) => {
       period_number INT NOT NULL,
       start_time TIME NULL,
       end_time TIME NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (assignment_id) REFERENCES teacher_assignments(assignment_id)
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `;
 
